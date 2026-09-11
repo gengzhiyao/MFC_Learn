@@ -1,5 +1,5 @@
-﻿
-// Step7_Widgets.cpp: 定义应用程序的类行为。
+
+// Step7_Widgets.cpp: ����Ӧ�ó��������Ϊ��
 //
 
 #include "pch.h"
@@ -19,63 +19,63 @@ BEGIN_MESSAGE_MAP(CWidgetsApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CWidgetsApp 构造
+// CWidgetsApp ����
 
 CWidgetsApp::CWidgetsApp()
 {
-	// TODO: 在此处添加构造代码，
-	// 将所有重要的初始化放置在 InitInstance 中
+	// TODO: �ڴ˴����ӹ�����룬
+	// ��������Ҫ�ĳ�ʼ�������� InitInstance ��
 }
 
 
-// 唯一的 CWidgetsApp 对象
+// Ψһ�� CWidgetsApp ����
 
 CWidgetsApp theApp;
 
 
-// CWidgetsApp 初始化
+// CWidgetsApp ��ʼ��
 
 BOOL CWidgetsApp::InitInstance()
 {
 	CWinApp::InitInstance();
 
 
-	// 创建 shell 管理器，以防对话框包含
-	// 任何 shell 树视图控件或 shell 列表视图控件。
+	// ���� shell ���������Է��Ի������
+	// �κ� shell ����ͼ�ؼ��� shell �б���ͼ�ؼ���
 	CShellManager *pShellManager = new CShellManager;
 
-	// 激活“Windows Native”视觉管理器，以便在 MFC 控件中启用主题
+	// ���Windows Native���Ӿ����������Ա��� MFC �ؼ�����������
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
-	// 标准初始化
-	// 如果未使用这些功能并希望减小
-	// 最终可执行文件的大小，则应移除下列
-	// 不需要的特定初始化例程
-	// 更改用于存储设置的注册表项
-	// TODO: 应适当修改该字符串，
-	// 例如修改为公司或组织名
-	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
+	// ��׼��ʼ��
+	// ���δʹ����Щ���ܲ�ϣ����С
+	// ���տ�ִ���ļ��Ĵ�С����Ӧ�Ƴ�����
+	// ����Ҫ���ض���ʼ������
+	// �������ڴ洢���õ�ע�����
+	// TODO: Ӧ�ʵ��޸ĸ��ַ�����
+	// �����޸�Ϊ��˾����֯��
+	SetRegistryKey(_T("Ӧ�ó��������ɵı���Ӧ�ó���"));
 
 	CWidgetsDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{
-		// TODO: 在此放置处理何时用
-		//  “确定”来关闭对话框的代码
+		// TODO: �ڴ˷��ô�����ʱ��
+		//  ��ȷ�������رնԻ���Ĵ���
 	}
 	else if (nResponse == IDCANCEL)
 	{
-		// TODO: 在此放置处理何时用
-		//  “取消”来关闭对话框的代码
+		// TODO: �ڴ˷��ô�����ʱ��
+		//  ��ȡ�������رնԻ���Ĵ���
 	}
 	else if (nResponse == -1)
 	{
-		TRACE(traceAppMsg, 0, "警告: 对话框创建失败，应用程序将意外终止。\n");
-		TRACE(traceAppMsg, 0, "警告: 如果您在对话框上使用 MFC 控件，则无法 #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS。\n");
+		TRACE(traceAppMsg, 0, "����: �Ի��򴴽�ʧ�ܣ�Ӧ�ó���������ֹ��\n");
+		TRACE(traceAppMsg, 0, "����: ������ڶԻ�����ʹ�� MFC �ؼ������޷� #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS��\n");
 	}
 
-	// 删除上面创建的 shell 管理器。
+	// ɾ�����洴���� shell ��������
 	if (pShellManager != nullptr)
 	{
 		delete pShellManager;
@@ -85,8 +85,8 @@ BOOL CWidgetsApp::InitInstance()
 	ControlBarCleanUp();
 #endif
 
-	// 由于对话框已关闭，所以将返回 FALSE 以便退出应用程序，
-	//  而不是启动应用程序的消息泵。
+	// ���ڶԻ����ѹرգ����Խ����� FALSE �Ա��˳�Ӧ�ó���
+	//  ����������Ӧ�ó������Ϣ�á�
 	return FALSE;
 }
 

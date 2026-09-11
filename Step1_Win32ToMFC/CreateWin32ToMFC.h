@@ -4,7 +4,7 @@ class CreateWin32ToMFC : public CWinApp
 {
 public:
 	CreateWin32ToMFC();
-	virtual BOOL InitInstance();
+	virtual BOOL InitInstance() override;
 };
 
 class mfcFrame :public CFrameWnd

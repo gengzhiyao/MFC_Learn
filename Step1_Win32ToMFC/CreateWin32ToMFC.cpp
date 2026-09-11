@@ -18,8 +18,8 @@ BOOL CreateWin32ToMFC::InitInstance()
 	 
 	auto usemapframe = new UseMapFrame();
 	usemapframe->Create(NULL, _T("CUSTOMFRAME"));
-	
-	return TRUE;
+    m_pMainWnd = usemapframe;
+	return CWinApp::InitInstance();
 }
 
 CreateWin32ToMFC theApp;
