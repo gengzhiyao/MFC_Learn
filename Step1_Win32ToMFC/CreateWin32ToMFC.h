@@ -1,5 +1,6 @@
-//#include "pch.h"
-
+// #include "pch.h"
+#include <afx.h>
+#include <afxext.h>
 class CreateWin32ToMFC : public CWinApp
 {
 public:
@@ -19,5 +20,8 @@ public:
 	LRESULT OnMyCreate(WPARAM wParam, LPARAM lParam);
 	afx_msg int OnCreate(LPCREATESTRUCT);
 	afx_msg LRESULT OnMyMessage(WPARAM wParam, LPARAM lParam);
-	DECLARE_MESSAGE_MAP()
+	// DECLARE_MESSAGE_MAP()
+protected:
+    static const AFX_MSGMAP* PASCAL GetThisMessageMap();
+    const AFX_MSGMAP* GetMessageMap() const override;
 };
