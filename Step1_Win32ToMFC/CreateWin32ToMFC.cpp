@@ -25,6 +25,7 @@ BOOL CreateWin32ToMFC::InitInstance( )
 
 CreateWin32ToMFC theApp;
 
+// MFC 消息映射机制：在不重写 WndProc 的前提下处理消息
 LRESULT mfcFrame::WindowProc( UINT msgID, WPARAM wParam, LPARAM lParam )
 {
     switch ( msgID )
@@ -57,20 +58,17 @@ LRESULT mfcFrame::WindowProc( UINT msgID, WPARAM wParam, LPARAM lParam )
 // END_MESSAGE_MAP( )
 
 PTM_WARNING_DISABLE
-const AFX_MSGMAP* UseMapFrame::GetMessageMap( ) const  // override
+const AFX_MSGMAP* UseMapFrame::GetMessageMap( ) const  // @override
 {
     return GetThisMessageMap( );
 }
 const AFX_MSGMAP* PASCAL UseMapFrame::GetThisMessageMap( )  //
 {
-    typedef UseMapFrame ThisClass;
-    typedef CFrameWnd   TheBaseClass;
-
     static const AFX_MSGMAP_ENTRY _messageEntries[] = //
         {
             // Begin Add
-            { WM_CREATE, 0, 0, 0, AfxSig_is, ( AFX_PMSG )( AFX_PMSGW )( static_cast<int ( CWnd::* )( LPCREATESTRUCT )>( &ThisClass ::OnCreate ) ) },
-            { MY_MESSAGE, 0, 0, 0, AfxSig_lwl, ( AFX_PMSG )( AFX_PMSGW )( static_cast<LRESULT ( CWnd::* )( WPARAM, LPARAM )>( OnMyMessage ) ) },    // ON_MESSAGE(MY_MESSAGE,OnMyMessage)
+            { WM_CREATE, 0, 0, 0, AfxSig_is, ( AFX_PMSG )( AFX_PMSGW )( static_cast<int ( CWnd::* )( LPCREATESTRUCT )>( &UseMapFrame::OnCreate ) ) },
+            { MY_MESSAGE, 0, 0, 0, AfxSig_lwl, ( AFX_PMSG )( AFX_PMSGW )( static_cast<LRESULT ( CWnd::* )( WPARAM, LPARAM )>( /*&*/ OnMyMessage ) ) },    // ON_MESSAGE(MY_MESSAGE,OnMyMessage)
             // End Add
             { 0, 0, 0, 0, AfxSig_end, ( AFX_PMSG )0 } // 哨兵
         };
@@ -80,8 +78,8 @@ const AFX_MSGMAP* PASCAL UseMapFrame::GetThisMessageMap( )  //
     //    const AFX_MSGMAP_ENTRY* lpEntries;                // 当前类消息数组的首地址
     //};
     // 
-    static const AFX_MSGMAP messageMap = { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
-    return &messageMap;
+    static const AFX_MSGMAP messageMap = { &CFrameWnd::GetThisMessageMap, &_messageEntries[0] };
+    return &messageMap; // 返回本类的静态变量，其内含有获取父类静态变量的函数
 }
 PTM_WARNING_RESTORE
 
