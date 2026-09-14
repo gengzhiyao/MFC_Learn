@@ -57,7 +57,7 @@ LRESULT mfcFrame::WindowProc( UINT msgID, WPARAM wParam, LPARAM lParam )
 // END_MESSAGE_MAP( )
 
 PTM_WARNING_DISABLE
-const AFX_MSGMAP* UseMapFrame::GetMessageMap( ) const  //
+const AFX_MSGMAP* UseMapFrame::GetMessageMap( ) const  // override
 {
     return GetThisMessageMap( );
 }
@@ -70,10 +70,16 @@ const AFX_MSGMAP* PASCAL UseMapFrame::GetThisMessageMap( )  //
         {
             // Begin Add
             { WM_CREATE, 0, 0, 0, AfxSig_is, ( AFX_PMSG )( AFX_PMSGW )( static_cast<int ( CWnd::* )( LPCREATESTRUCT )>( &ThisClass ::OnCreate ) ) },
-            { MY_MESSAGE, 0, 0, 0, AfxSig_lwl, ( AFX_PMSG )( AFX_PMSGW )( static_cast<LRESULT ( CWnd::* )( WPARAM, LPARAM )>( OnMyMessage ) ) },
+            { MY_MESSAGE, 0, 0, 0, AfxSig_lwl, ( AFX_PMSG )( AFX_PMSGW )( static_cast<LRESULT ( CWnd::* )( WPARAM, LPARAM )>( OnMyMessage ) ) },    // ON_MESSAGE(MY_MESSAGE,OnMyMessage)
             // End Add
             { 0, 0, 0, 0, AfxSig_end, ( AFX_PMSG )0 } // 哨兵
         };
+    //struct AFX_MSGMAP
+    //{
+    //    const AFX_MSGMAP*( PASCAL* pfnGetBaseMap )( );    // 基类的消息映射表的函数指针
+    //    const AFX_MSGMAP_ENTRY* lpEntries;                // 当前类消息数组的首地址
+    //};
+    // 
     static const AFX_MSGMAP messageMap = { &TheBaseClass::GetThisMessageMap, &_messageEntries[0] };
     return &messageMap;
 }
