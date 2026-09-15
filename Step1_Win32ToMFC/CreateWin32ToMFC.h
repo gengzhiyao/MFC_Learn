@@ -11,7 +11,7 @@ public:
 class mfcFrame :public CFrameWnd
 {
 public:
-	virtual LRESULT WindowProc(UINT msgID, WPARAM wParam, LPARAM lParam) override;
+	virtual LRESULT WindowProc(UINT msgID, WPARAM wParam, LPARAM lParam) override;	// 重写 WndProc 函数 并不是消息映射机制
 };
 
 class UseMapFrame :public CFrameWnd
