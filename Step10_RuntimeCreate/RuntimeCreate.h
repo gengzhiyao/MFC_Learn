@@ -6,9 +6,10 @@ class Base :public CObject
 	DECLARE_DYNAMIC(Base)
 };
 
+// 动态创建机制不需要父类声明 DECLARE_DYNCREATE 但是父类必须有 DECLARE_DYNAMIC
 class Derived :public Base
 {
-	//DECLARE_DYNCREATE(Derived)
+	// DECLARE_DYNCREATE(Derived)
 	// DECLARE_DYNAMIC(Derived)
 public: 
 	static const CRuntimeClass classDerived;
