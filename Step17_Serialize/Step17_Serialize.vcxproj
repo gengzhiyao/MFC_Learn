@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{6DA212B2-065E-E180-9320-85EF8908FFE3}</ProjectGuid>
+    <ProjectGuid>{02DF7087-4180-52B2-8A99-6ED1D08C18EE}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
-    <RootNamespace>Step7Widgets</RootNamespace>
+    <RootNamespace>Step17Serialize</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -31,7 +31,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -39,7 +39,7 @@
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -184,31 +184,36 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Step7_Widgets.h" />
-    <ClInclude Include="Step7_WidgetsDlg.h" />
+    <ClInclude Include="Step17_Serialize.h" />
+    <ClInclude Include="Step17_SerializeDoc.h" />
+    <ClInclude Include="Step17_SerializeView.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Step7_Widgets.cpp" />
-    <ClCompile Include="Step7_WidgetsDlg.cpp" />
+    <ClCompile Include="Step17_Serialize.cpp" />
+    <ClCompile Include="Step17_SerializeDoc.cpp" />
+    <ClCompile Include="Step17_SerializeView.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Step7Widgets.rc" />
+    <ResourceCompile Include="Step17Serialize.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\cursor1.cur" />
-    <None Include="res\Step7Widgets.rc2" />
+    <None Include="res\Step17Serialize.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\Step7_Widgets.ico" />
+    <Image Include="res\Step17_Serialize.ico" />
+    <Image Include="res\Step17_SerializeDoc.ico" />
+    <Image Include="res\Toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

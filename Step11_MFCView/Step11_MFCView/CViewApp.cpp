@@ -4,7 +4,7 @@ BOOL CViewApp::InitInstance()
 {
 	MyFrame* pFrame = new MyFrame();
 	pFrame->Create(NULL, _T("FrameForView "));
-	this->m_pMainWnd = pFrame;///m_pMainWnd当前应用程序的主窗口
+	this->m_pMainWnd = pFrame;//m_pMainWnd当前应用程序的主窗口
 	pFrame->ShowWindow(SW_SHOW);
 	pFrame->UpdateWindow();
 	return TRUE;

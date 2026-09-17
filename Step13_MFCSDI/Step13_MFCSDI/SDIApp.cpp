@@ -19,4 +19,13 @@ void CMyView::OnDraw(CDC* pDC)
 	pDC->TextOut(100,100,_T("我是视图窗口"));
 }
 
-///MFC中，应用程序类处理的消息是ONCOMMAND，其他消息基本到不了这里
+/// MFC中，应用程序类处理的消息是ONCOMMAND，其他消息基本到不了这里
+BEGIN_MESSAGE_MAP( CMyFrame, CFrameWnd )
+	ON_WM_CREATE( )
+END_MESSAGE_MAP( )
+
+int CMyFrame::OnCreate( LPCREATESTRUCT cs )
+{
+    OutputDebugString( L">>>>>>>>CMyFrame::OnCreate\n" );
+    return CFrameWnd::OnCreate(cs );
+}

@@ -2,10 +2,10 @@
 // Microsoft Visual C++ 生成的包含文件。
 // 供 Step13_MFCSDI.rc 使用
 //
+#include <afxres.h>	// for AFX_IDS_UNTITLED
 #define IDR_MENU1                       101
 #define ID_40001                        40001
 #define ID_NEW                          40002
-#define AFX_IDS_UNTITLED                45672
 
 // Next default values for new objects
 // 
