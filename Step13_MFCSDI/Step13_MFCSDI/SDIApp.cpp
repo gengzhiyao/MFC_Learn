@@ -1,5 +1,6 @@
 #include "SDIApp.h"
 #include "resource.h"
+#include "CMyStroke.h"
 
 // App::m_pDocManager(CDocManager) -> 
 BOOL SDIApp::InitInstance()
@@ -18,6 +19,32 @@ SDIApp theApp;
 void CMyView::OnDraw(CDC* pDC)
 {
 	pDC->TextOut(100,100,_T("我是视图窗口"));
+    if ( m_isDrawing )
+    {
+        CPen pen( PS_SOLID, 10, COLORREF( 0 ) );
+        pDC->SelectObject( pen );
+        pDC->BeginPath( );
+        for ( const auto& stroke : m_strokeArray )
+        {
+            for ( int i = 0; i < stroke->GetSize( ) - 1; i++ )
+            {
+                if ( i==0)
+                    pDC->MoveTo( stroke->GetStrokePt(i) );
+                pDC->LineTo( stroke->GetStrokePt(i + 1) );
+            }
+            
+        }
+        pDC->EndPath( );
+        pDC->StrokePath( );
+    }
+}
+
+CMyView::~CMyView( )
+{
+    for ( auto p : m_strokeArray )
+    {
+        delete p;
+    }
 }
 
 /// MFC中，应用程序类处理的消息是ONCOMMAND，其他消息基本到不了这里
@@ -29,4 +56,39 @@ int CMyFrame::OnCreate( LPCREATESTRUCT cs )
 {
     OutputDebugString( L">>>>>>>>CMyFrame::OnCreate\n" );
     return CFrameWnd::OnCreate(cs );
+}
+BEGIN_MESSAGE_MAP( CMyView, CView )
+ON_WM_LBUTTONDOWN( )
+ON_WM_MOUSEMOVE( )
+ON_WM_LBUTTONUP( )
+END_MESSAGE_MAP( )
+
+void CMyView::OnLButtonDown( UINT nFlags, CPoint point )
+{
+    m_flag = 0x01;
+    CMyStroke* stroke = new CMyStroke;
+    stroke->PrePoint( point );
+    m_strokeArray.push_back( stroke );
+    CView::OnLButtonDown( nFlags, point );
+}
+
+void CMyView::OnMouseMove( UINT nFlags, CPoint point )
+{
+	if ( m_flag == 0x01 )
+	{
+        m_isDrawing = true;
+        m_strokeArray.back( )->Store( point );
+        m_prePos = m_strokeArray.back( )->GetPrePt( );
+        CClientDC dc( this );
+        dc.MoveTo( m_prePos );
+        dc.LineTo( point );
+        m_strokeArray.back( )->SetPrePt( point );
+	}
+    CView::OnMouseMove( nFlags, point );
+}
+
+void CMyView::OnLButtonUp( UINT nFlags, CPoint point )
+{
+    m_flag = 0x00;
+    CView::OnLButtonUp( nFlags, point );
 }

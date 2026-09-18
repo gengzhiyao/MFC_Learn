@@ -124,10 +124,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CMyStroke.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SDIApp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CMyStroke.cpp" />
     <ClCompile Include="SDIApp.cpp" />
   </ItemGroup>
   <ItemGroup>
