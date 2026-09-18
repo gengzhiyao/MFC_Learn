@@ -7,6 +7,7 @@
 
 CreateWin32ToMFC::CreateWin32ToMFC( ) {}
 
+// WinMain -> InitInstance -> 
 BOOL CreateWin32ToMFC::InitInstance( )
 {
     /*mfcFrame* customFrame = new mfcFrame();
