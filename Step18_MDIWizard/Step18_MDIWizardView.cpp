@@ -35,7 +35,9 @@ END_MESSAGE_MAP( )
 // CStep18MDIWizardView 构造/析构
 
 CStep18MDIWizardView::CStep18MDIWizardView( ) noexcept
-    : m_isBeginDraw( false )
+    : m_isBeginDraw( false ),
+      m_oldPt( 0, 0 ),
+      m_mouseDownPt( 0, 0 )
 {
 }
 
@@ -98,6 +100,7 @@ void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
     SetCapture( );
     m_isBeginDraw = true;
     m_mouseDownPt = point;
+    m_oldPt = point;
     CScrollView::OnLButtonDown( nFlags, point );
 }
 
@@ -114,11 +117,20 @@ void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
     CPen      pen;
     pen.CreatePen( PS_SOLID, 2, COLORREF( RGB( 255, 0, 0 ) ) );
     CPen* pOldPen = ( CPen* )clientDC.SelectObject( &pen );
+    CBrush* pOldBrush = ( CBrush* )clientDC.SelectStockObject( NULL_BRUSH );
     // 设置异或绘图模式：画一次显示，再画一次就擦掉
     int nOldRop = clientDC.SetROP2( R2_XORPEN );
-    if ( m_isBeginDraw ) clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, point.x, point.y );
+    if ( m_isBeginDraw )
+    {
+        clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, m_oldPt.x, m_oldPt.y );
+        clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, point.x, point.y );
+        m_oldPt = point;
+    }
+        
     clientDC.SetROP2( nOldRop );
     clientDC.SelectObject( pOldPen );
+    clientDC.SelectObject( pOldBrush );
     pen.DeleteObject( );
+    Invalidate(false );
     CScrollView::OnMouseMove( nFlags, point );
 }
