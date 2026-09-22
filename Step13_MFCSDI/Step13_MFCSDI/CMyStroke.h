@@ -4,7 +4,7 @@
 class CMyStroke
 {
 public:
-    void Store( const CPoint& pt );
+    void Store( CPoint pt );
     void PrePoint( const CPoint& pt );
     CPoint GetPrePt( ) { return m_prePt; }
     void   SetPrePt( const CPoint& pt ) { m_prePt = pt; }

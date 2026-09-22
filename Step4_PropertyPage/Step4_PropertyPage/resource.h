@@ -4,6 +4,7 @@
 //
 #define IDD_STEP4_PROPERTYPAGE_DIALOG   102
 #define IDD_DIALOG                      102
+#define IDD_StartDlg                    103
 #define IDR_MAINFRAME                   128
 #define IDD_SYNOPSIS                    129
 #define IDD_COMFIRM                     130
@@ -18,6 +19,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
