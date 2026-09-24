@@ -17,89 +17,120 @@
 #define new DEBUG_NEW
 #endif
 
-
 // CStep18MDIWizardView
 
-IMPLEMENT_DYNCREATE(CStep18MDIWizardView, CView)
+IMPLEMENT_DYNCREATE( CStep18MDIWizardView, CScrollView )
 
-BEGIN_MESSAGE_MAP(CStep18MDIWizardView, CView)
-	// 标准打印命令
-	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
-END_MESSAGE_MAP()
+BEGIN_MESSAGE_MAP( CStep18MDIWizardView, CScrollView )
+        // 标准打印命令
+ON_COMMAND( ID_FILE_PRINT, &CScrollView::OnFilePrint )
+ON_COMMAND( ID_FILE_PRINT_DIRECT, &CScrollView::OnFilePrint )
+ON_COMMAND( ID_FILE_PRINT_PREVIEW, &CScrollView::OnFilePrintPreview )
+ON_WM_LBUTTONDOWN( )
+ON_WM_LBUTTONUP( )
+ON_WM_MOUSEMOVE( )
+ON_COMMAND( IDS_RECT, &CStep18MDIWizardView::OnSelectRect )
+END_MESSAGE_MAP( )
 
 // CStep18MDIWizardView 构造/析构
 
-CStep18MDIWizardView::CStep18MDIWizardView() noexcept
-{
-	// TODO: 在此处添加构造代码
-
-}
-
-CStep18MDIWizardView::~CStep18MDIWizardView()
+CStep18MDIWizardView::CStep18MDIWizardView( ) noexcept
+    : m_isBeginDraw( false ),
+      m_oldPt( 0, 0 ),
+      m_mouseDownPt( 0, 0 )
 {
 }
 
-BOOL CStep18MDIWizardView::PreCreateWindow(CREATESTRUCT& cs)
-{
-	// TODO: 在此处通过修改
-	//  CREATESTRUCT cs 来修改窗口类或样式
+CStep18MDIWizardView::~CStep18MDIWizardView( ) {}
 
-	return CView::PreCreateWindow(cs);
-}
+BOOL CStep18MDIWizardView::PreCreateWindow( CREATESTRUCT& cs ) { return CScrollView::PreCreateWindow( cs ); }
 
 // CStep18MDIWizardView 绘图
 
-void CStep18MDIWizardView::OnDraw(CDC* /*pDC*/)
+void CStep18MDIWizardView::OnDraw( CDC* pDC )
 {
-	CStep18MDIWizardDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-	if (!pDoc)
-		return;
+    CStep18MDIWizardDoc* pDoc = GetDocument( );
+    ASSERT_VALID( pDoc );
+    if ( !pDoc ) return;
 
-	// TODO: 在此处为本机数据添加绘制代码
+    return CView::OnDraw( pDC );
 }
-
 
 // CStep18MDIWizardView 打印
 
-BOOL CStep18MDIWizardView::OnPreparePrinting(CPrintInfo* pInfo)
+BOOL CStep18MDIWizardView::OnPreparePrinting( CPrintInfo* pInfo )
 {
-	// 默认准备
-	return DoPreparePrinting(pInfo);
+        // 默认准备
+    return DoPreparePrinting( pInfo );
 }
 
-void CStep18MDIWizardView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
+void CStep18MDIWizardView::OnBeginPrinting( CDC* /*pDC*/, CPrintInfo* /*pInfo*/ ) {}
+
+void CStep18MDIWizardView::OnEndPrinting( CDC* /*pDC*/, CPrintInfo* /*pInfo*/ ) {}
+
+void CStep18MDIWizardView::OnInitialUpdate( )
 {
-	// TODO: 添加额外的打印前进行的初始化过程
+    SetScrollSizes( MM_TEXT, CSize( 1000, 1000 ) );
+    return CScrollView::OnInitialUpdate( );
 }
 
-void CStep18MDIWizardView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
+void CStep18MDIWizardView::OnSelectRect( )
 {
-	// TODO: 添加打印后进行的清理过程
+    // Do
 }
-
 
 // CStep18MDIWizardView 诊断
 
 #ifdef _DEBUG
-void CStep18MDIWizardView::AssertValid() const
-{
-	CView::AssertValid();
-}
+void CStep18MDIWizardView::AssertValid( ) const { CScrollView::AssertValid( ); }
 
-void CStep18MDIWizardView::Dump(CDumpContext& dc) const
-{
-	CView::Dump(dc);
-}
+void CStep18MDIWizardView::Dump( CDumpContext& dc ) const { CScrollView::Dump( dc ); }
 
-CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument() const // 非调试版本是内联的
+CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const // 非调试版本是内联的
 {
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CStep18MDIWizardDoc)));
-	return (CStep18MDIWizardDoc*)m_pDocument;
+    ASSERT( m_pDocument->IsKindOf( RUNTIME_CLASS( CStep18MDIWizardDoc ) ) );
+    return ( CStep18MDIWizardDoc* )m_pDocument;
 }
 #endif //_DEBUG
 
-
 // CStep18MDIWizardView 消息处理程序
+
+void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
+{
+    SetCapture( );
+    m_isBeginDraw = true;
+    m_mouseDownPt = point;
+    m_oldPt = point;
+    CScrollView::OnLButtonDown( nFlags, point );
+}
+
+void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
+{
+    ReleaseCapture( );
+    m_isBeginDraw = false;
+    CScrollView::OnLButtonUp( nFlags, point );
+}
+
+void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
+{
+    CClientDC clientDC( this );
+    CPen      pen;
+    pen.CreatePen( PS_SOLID, 2, COLORREF( RGB( 255, 0, 0 ) ) );
+    CPen* pOldPen = ( CPen* )clientDC.SelectObject( &pen );
+    CBrush* pOldBrush = ( CBrush* )clientDC.SelectStockObject( NULL_BRUSH );
+    // 设置异或绘图模式：画一次显示，再画一次就擦掉
+    int nOldRop = clientDC.SetROP2( R2_XORPEN );
+    if ( m_isBeginDraw )
+    {
+        clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, m_oldPt.x, m_oldPt.y );
+        clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, point.x, point.y );
+        m_oldPt = point;
+    }
+        
+    clientDC.SetROP2( nOldRop );
+    clientDC.SelectObject( pOldPen );
+    clientDC.SelectObject( pOldBrush );
+    pen.DeleteObject( );
+    Invalidate(false );
+    CScrollView::OnMouseMove( nFlags, point );
+}

@@ -45,6 +45,12 @@
     <ClInclude Include="CGuideSheet.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="StartDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CSplashThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Step4_PropertyPage.cpp">
@@ -66,6 +72,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CGuideSheet.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StartDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CSplashThread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

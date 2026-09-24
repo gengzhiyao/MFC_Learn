@@ -9,7 +9,7 @@
 #endif
 
 #include "resource.h"		// 主符号
-
+#include "CSplashThread.h"
 
 // CStep4PropertyPageApp:
 // 有关此类的实现，请参阅 Step4_PropertyPage.cpp
@@ -20,6 +20,8 @@ class CStep4PropertyPageApp : public CWinApp
 public:
 	CStep4PropertyPageApp();
 
+public:
+        CSplashThread* m_pSplashThread;
 // 重写
 public:
 	virtual BOOL InitInstance();

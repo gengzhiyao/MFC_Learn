@@ -187,10 +187,12 @@
     <ClInclude Include="CConfirmPage.h" />
     <ClInclude Include="CGuideSheet.h" />
     <ClInclude Include="CInstallPage.h" />
+    <ClInclude Include="CSplashThread.h" />
     <ClInclude Include="CSynopsisPage.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="StartDlg.h" />
     <ClInclude Include="Step4_PropertyPage.h" />
     <ClInclude Include="Step4_PropertyPageDlg.h" />
     <ClInclude Include="targetver.h" />
@@ -199,6 +201,7 @@
     <ClCompile Include="CConfirmPage.cpp" />
     <ClCompile Include="CGuideSheet.cpp" />
     <ClCompile Include="CInstallPage.cpp" />
+    <ClCompile Include="CSplashThread.cpp" />
     <ClCompile Include="CSynopsisPage.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -206,6 +209,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StartDlg.cpp" />
     <ClCompile Include="Step4_PropertyPage.cpp" />
     <ClCompile Include="Step4_PropertyPageDlg.cpp" />
   </ItemGroup>
