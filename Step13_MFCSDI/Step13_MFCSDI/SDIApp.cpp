@@ -4,16 +4,7 @@
 
 // App::m_pDocManager(CDocManager) ->
 BOOL SDIApp::InitInstance( )
-// App::m_pDocManager(CDocManager) ->
-BOOL SDIApp::InitInstance( )
 {
-    /// 文档模板中存放了与文档视图和框架相关的信息，应用程序通过文档模板创建文档对象，框架窗口和视图对象
-    CSingleDocTemplate* pTemplte = new CSingleDocTemplate( IDR_MENU1, RUNTIME_CLASS( CMyDoc ), RUNTIME_CLASS( CMyFrame ), RUNTIME_CLASS( CMyView ) );
-    AddDocTemplate( pTemplte );
-    OnFileNew( );
-    m_pMainWnd->ShowWindow( SW_SHOW );
-    m_pMainWnd->UpdateWindow( );
-    return TRUE;
     /// 文档模板中存放了与文档视图和框架相关的信息，应用程序通过文档模板创建文档对象，框架窗口和视图对象
     CSingleDocTemplate* pTemplte = new CSingleDocTemplate( IDR_MENU1, RUNTIME_CLASS( CMyDoc ), RUNTIME_CLASS( CMyFrame ), RUNTIME_CLASS( CMyView ) );
     AddDocTemplate( pTemplte );
@@ -26,13 +17,12 @@ BOOL SDIApp::InitInstance( )
 SDIApp theApp;
 
 void CMyView::OnDraw( CDC* pDC )
-void CMyView::OnDraw( CDC* pDC )
 {
-    pDC->TextOut( 100, 100, _T("我是视图窗口") );
     pDC->TextOut( 100, 100, _T("我是视图窗口") );
     if ( m_isDrawing )
     {
-        CPen pen( PS_SOLID, 10, COLORREF( RGB(255,0,0) ) );
+        // memoryDC.BeginPath( );
+        CPen  pen( PS_SOLID, 10, COLORREF( RGB( 255, 0, 0 ) ) );
         CRect clientRc;
         GetClientRect( &clientRc );
         CBitmap cacheBitmap;
@@ -47,40 +37,23 @@ void CMyView::OnDraw( CDC* pDC )
         memoryDC.SelectObject( &font );
         memoryDC.SetTextColor( RGB( 0, 255, 0 ) );
         memoryDC.TextOut( 100, 100, _T("我是内存中的视图窗口") );
-        //memoryDC.BeginPath( );
-        CPen pen( PS_SOLID, 10, COLORREF( RGB(255,0,0) ) );
-        CRect clientRc;
-        GetClientRect( &clientRc );
-        CBitmap cacheBitmap;
-        cacheBitmap.CreateCompatibleBitmap( pDC, clientRc.Width( ), clientRc.Height( ) );
-        CDC memoryDC;
-        memoryDC.CreateCompatibleDC( pDC );
-        memoryDC.SelectObject( &cacheBitmap );
-        memoryDC.PatBlt( 0, 0, clientRc.Width( ), clientRc.Height( ), WHITENESS );
-        memoryDC.SelectObject( &pen );
-        CFont font;
-        font.CreatePointFont( 2000, _T("微软雅黑") );
-        memoryDC.SelectObject( &font );
-        memoryDC.SetTextColor( RGB( 0, 255, 0 ) );
-        memoryDC.TextOut( 100, 100, _T("我是内存中的视图窗口") );
-        //memoryDC.BeginPath( );
+        // memoryDC.BeginPath( );
         for ( const auto& stroke : m_strokeArray )
         {
             for ( int i = 0; i < stroke->GetSize( ) - 1; i++ )
             {
-                if ( i == 0 ) 
-                    memoryDC.MoveTo( stroke->GetStrokePt( i ) );
+                if ( i == 0 ) memoryDC.MoveTo( stroke->GetStrokePt( i ) );
                 memoryDC.LineTo( stroke->GetStrokePt( i + 1 ) );
                 // NEW
-                int nPtCnt = stroke->GetSize( );
+                size_t nPtCnt = stroke->GetSize( );
                 if ( nPtCnt < 2 ) continue;
                 // 直接传入点数组，一次性画整条涂鸦笔画
-                //POINT P( stroke->m_ptArray[0].x, stroke->m_ptArray[0].y );
-                //pDC->Polyline( ( stroke->m_ptArray[0] ), nPtCnt );
+                // POINT P( stroke->m_ptArray[0].x, stroke->m_ptArray[0].y );
+                // pDC->Polyline( ( stroke->m_ptArray[0] ), nPtCnt );
             }
         }
-        //memoryDC.EndPath( );
-        //memoryDC.StrokePath( );
+        // memoryDC.EndPath( );
+        // memoryDC.StrokePath( );
         pDC->BitBlt( 0, 0, clientRc.Width( ), clientRc.Height( ), &memoryDC, 0, 0, SRCCOPY );
     }
 }
@@ -103,7 +76,6 @@ int CMyFrame::OnCreate( LPCREATESTRUCT cs )
 {
     OutputDebugString( L">>>>>>>>CMyFrame::OnCreate\n" );
     return CFrameWnd::OnCreate( cs );
-    return CFrameWnd::OnCreate( cs );
 }
 BEGIN_MESSAGE_MAP( CMyView, CView )
 ON_WM_LBUTTONDOWN( )
@@ -124,8 +96,6 @@ void CMyView::OnMouseMove( UINT nFlags, CPoint point )
 {
     if ( m_flag == 0x01 )
     {
-    if ( m_flag == 0x01 )
-    {
         m_isDrawing = true;
         m_strokeArray.back( )->Store( point );
         m_prePos = m_strokeArray.back( )->GetPrePt( );
@@ -134,7 +104,7 @@ void CMyView::OnMouseMove( UINT nFlags, CPoint point )
         dc.LineTo( point );
         m_strokeArray.back( )->SetPrePt( point );
     }
-    }
+
     CView::OnMouseMove( nFlags, point );
 }
 
