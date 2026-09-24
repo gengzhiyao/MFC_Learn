@@ -30,6 +30,12 @@ void CMyView::OnDraw(CDC* pDC)
                 if ( i==0)
                     pDC->MoveTo( stroke->GetStrokePt(i) );
                 pDC->LineTo( stroke->GetStrokePt(i + 1) );
+                // NEW
+                int nPtCnt = stroke->GetSize( );
+                if ( nPtCnt < 2 ) continue;
+                // 直接传入点数组，一次性画整条涂鸦笔画
+                //POINT P( stroke->m_ptArray[0].x, stroke->m_ptArray[0].y );
+                //pDC->Polyline( ( stroke->m_ptArray[0] ), nPtCnt );
             }
             
         }

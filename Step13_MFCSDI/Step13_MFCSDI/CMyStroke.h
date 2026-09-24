@@ -11,7 +11,7 @@ public:
     size_t GetSize( ) { return m_ptArray.size( ); }
     const CPoint& GetStrokePt( size_t idx ) { return m_ptArray.at( idx ); }
 
-private:
+//private:
     std::vector<CPoint> m_ptArray;
     CPoint              m_prePt;
 };
