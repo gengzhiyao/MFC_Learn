@@ -21,15 +21,20 @@ BEGIN_MESSAGE_MAP( CStep19ActiveXControlCtrl, COleControl )
     ON_WM_TIMER( )
     ON_WM_CREATE( )
     ON_WM_DESTROY( )
-    END_MESSAGE_MAP( )
+END_MESSAGE_MAP( )
 
 // 调度映射
+// 调用映射是为了让外部的容器可以访问控件的属性和方法
 
 BEGIN_DISPATCH_MAP( CStep19ActiveXControlCtrl, COleControl )
     DISP_FUNCTION_ID( CStep19ActiveXControlCtrl, "AboutBox", DISPID_ABOUTBOX, AboutBox, VT_EMPTY, VTS_NONE )
-END_DISPATCH_MAP( )
+    DISP_STOCKPROP_BACKCOLOR( ) // Add
+    DISP_STOCKPROP_FORECOLOR( ) // Add
+    DISP_PROPERTY_NOTIFY_ID( CStep19ActiveXControlCtrl, "Interval", dispIdInterval, m_interval, OnIntervalChanged,VT_I4 )
+    END_DISPATCH_MAP( )
 
 // 事件映射
+// 事件映射是为了让控件向包含他的容器发送事件
 
 BEGIN_EVENT_MAP( CStep19ActiveXControlCtrl, COleControl )
 END_EVENT_MAP( )
@@ -37,8 +42,9 @@ END_EVENT_MAP( )
 // 属性页
 
 // TODO: 根据需要添加更多属性页。请记住增加计数!
-BEGIN_PROPPAGEIDS( CStep19ActiveXControlCtrl, 1 )
-PROPPAGEID( CStep19ActiveXControlPropPage::guid )
+BEGIN_PROPPAGEIDS( CStep19ActiveXControlCtrl, 2 )
+    PROPPAGEID( CStep19ActiveXControlPropPage::guid )
+    PROPPAGEID( CLSID_CColorPropPage )
 END_PROPPAGEIDS( CStep19ActiveXControlCtrl )
 
 // 初始化类工厂和 guid
@@ -91,7 +97,7 @@ BOOL CStep19ActiveXControlCtrl::CStep19ActiveXControlCtrlFactory::UpdateRegistry
 CStep19ActiveXControlCtrl::CStep19ActiveXControlCtrl( )
 {
     InitializeIIDs( &IID_DStep19ActiveXControl, &IID_DStep19ActiveXControlEvents );
-
+    m_interval = 1;
     // this->SetTimer( 1, 1000, nullptr ); 构造函数中，还没有生成窗口句柄，m_hWnd 为空
 }
 
@@ -110,6 +116,12 @@ void CStep19ActiveXControlCtrl::OnDraw( CDC* pdc, const CRect& rcBounds, const C
 
     pdc->FillRect( rcBounds, CBrush::FromHandle( ( HBRUSH )GetStockObject( WHITE_BRUSH ) ) );
     pdc->Ellipse( rcBounds );
+
+    CBrush  brush( TranslateColor( GetBackColor( ) ) );
+    // CBrush* pOldBrush= pdc->SelectObject( &brush );
+    pdc->FillRect( rcBounds, &brush );
+    pdc->SetTextColor( TranslateColor( GetForeColor( ) ) );
+    pdc->SetBkMode( TRANSPARENT );
     CTime curTime=CTime::GetCurrentTime( );
     CString strTime = curTime.Format(_T("%H:%M:%S"));
     pdc->TextOut( rcBounds.top, rcBounds.left, strTime );
@@ -148,13 +160,14 @@ void CStep19ActiveXControlCtrl::OnTimer( UINT_PTR nIDEvent )
 {
     if ( nIDEvent==1)
         Invalidate( );
+        // InvalidateControl();    // 强制重绘控件自身
     COleControl::OnTimer( nIDEvent );
 }
 
 int CStep19ActiveXControlCtrl::OnCreate( LPCREATESTRUCT lpCreateStruct )
 {
     if ( COleControl::OnCreate( lpCreateStruct ) == -1 ) return -1;
-    this->SetTimer( 1, 1000, nullptr );
+    this->SetTimer( 1, m_interval, nullptr );
     return 0;
 }
 
@@ -162,4 +175,11 @@ void CStep19ActiveXControlCtrl::OnDestroy( )
 {
     this->KillTimer( 1 );
     COleControl::OnDestroy( );
+}
+
+void CStep19ActiveXControlCtrl::OnIntervalChanged( )
+{
+    if ( m_interval < 0 ) m_interval = 1;
+    KillTimer( 1 );
+    SetTimer( 1, m_interval, nullptr );
 }

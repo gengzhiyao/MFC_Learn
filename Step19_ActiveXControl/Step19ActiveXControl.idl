@@ -4,6 +4,8 @@
 // 生成类型库(Step19_ActiveXControl.tlb)，该类型库将成为
 // Step19_ActiveXControl.ocx。
 
+// 为了实现 COM 接口的二进制兼容，微软提供了 IDL 文件，这种文件采用独立的中间语言编写，IDL = 接口定义语言
+
 #include <olectl.h>
 #include <idispids.h>
 
@@ -20,6 +22,9 @@ library Step19ActiveXControlLib
 	dispinterface _DStep19ActiveXControl
 	{
 		properties:
+                [ id( DISPID_BACKCOLOR ), bindable, requestedit ] OLE_COLOR BackColor;	// Add
+                [ id( DISPID_FORECOLOR ), bindable, requestedit ] OLE_COLOR ForeColor;	// Add
+                [id( 1 )] LONG                                              Interval;	// 自定义属性
 		methods:
 
 			[id(DISPID_ABOUTBOX)] void AboutBox();

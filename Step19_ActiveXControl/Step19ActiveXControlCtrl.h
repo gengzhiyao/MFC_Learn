@@ -2,8 +2,8 @@
 
 // Step19ActiveXControlCtrl.h : CStep19ActiveXControlCtrl ActiveX 控件类的声明。
 
-
-// CStep19ActiveXControlCtrl : 请参阅 Step19ActiveXControlCtrl.cpp 了解实现。
+// 在类视图中，Lib中定义了几个接口，这些接口可以看作是纯虚函数的调用方式
+// Ctrl类继承了_DXXX，通过该接口的调用实际上会调用Ctrl类的实现
 
 class CStep19ActiveXControlCtrl : public COleControl
 {
@@ -42,9 +42,12 @@ protected:
 // 调度和事件 ID
 public:
 	enum {
+		dispIdInterval=1	// 保持和 IDL 文件中的属性 ID 一致
 	};
     afx_msg void OnTimer( UINT_PTR nIDEvent );
         afx_msg int  OnCreate( LPCREATESTRUCT lpCreateStruct );
     afx_msg void OnDestroy( );
+        void         OnIntervalChanged( );
+    long             m_interval;
 };
 
