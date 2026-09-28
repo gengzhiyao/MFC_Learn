@@ -30,6 +30,8 @@ ON_WM_LBUTTONDOWN( )
 ON_WM_LBUTTONUP( )
 ON_WM_MOUSEMOVE( )
 ON_COMMAND( IDS_RECT, &CStep18MDIWizardView::OnSelectRect )
+ON_COMMAND( IDS_CIRCUL, &CStep18MDIWizardView::OnSelectCircul )
+ON_COMMAND( IDS_POLYGON, &CStep18MDIWizardView::OnSelectPolygon )
 END_MESSAGE_MAP( )
 
 // CStep18MDIWizardView 构造/析构
@@ -133,4 +135,14 @@ void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
     pen.DeleteObject( );
     Invalidate(false );
     CScrollView::OnMouseMove( nFlags, point );
+}
+
+void CStep18MDIWizardView::OnSelectCircul( )
+{
+     // Do
+}
+
+void CStep18MDIWizardView::OnSelectPolygon( )
+{
+    // Do
 }

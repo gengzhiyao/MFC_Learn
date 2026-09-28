@@ -48,6 +48,10 @@ private:
     CPoint m_mouseDownPt;
     CPoint m_oldPt;
     bool   m_isBeginDraw;
+
+public:
+    afx_msg void OnSelectCircul( );
+    afx_msg void OnSelectPolygon( );
 };
 
 #ifndef _DEBUG  // Step18_MDIWizardView.cpp 中的调试版本
