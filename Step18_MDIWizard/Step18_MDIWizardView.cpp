@@ -43,7 +43,13 @@ CStep18MDIWizardView::CStep18MDIWizardView( ) noexcept
 
 CStep18MDIWizardView::~CStep18MDIWizardView( ) {}
 
-BOOL CStep18MDIWizardView::PreCreateWindow( CREATESTRUCT& cs ) { return CScrollView::PreCreateWindow( cs ); }
+BOOL CStep18MDIWizardView::PreCreateWindow( CREATESTRUCT& cs )
+{
+    // Windows 中维护一批可复用的DC，每次调用 GetDC 都会拿一个，ReleaseDC 归还
+    /// 当窗口注册时带 CS_OWNDC 时，表明自己私有 DC ，每次调用 GetDC 时返回同一个DC
+    cs.lpszClass = AfxRegisterWndClass( CS_OWNDC | CS_HREDRAW | CS_VREDRAW, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ), NULL );
+    return CScrollView::PreCreateWindow( cs );
+}
 
 // CStep18MDIWizardView 绘图
 
@@ -113,10 +119,17 @@ void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
 
 void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
 {
+    CDC* pDC = GetDC( );
+    HDC  hDC = ::GetDC( this->GetSafeHwnd( ) );
+    CDC* pSameDC = CDC::FromHandle( hDC );
+    if ( pDC->m_hDC == pSameDC->m_hDC )
+    {
+        AfxMessageBox( L"一致的DC" );  // CS_OWNDC
+    }
     CClientDC clientDC( this );
     CPen      pen;
     pen.CreatePen( PS_SOLID, 2, COLORREF( RGB( 255, 0, 0 ) ) );
-    CPen* pOldPen = ( CPen* )clientDC.SelectObject( &pen );
+    CPen*   pOldPen = ( CPen* )clientDC.SelectObject( &pen );
     CBrush* pOldBrush = ( CBrush* )clientDC.SelectStockObject( NULL_BRUSH );
     // 设置异或绘图模式：画一次显示，再画一次就擦掉
     int nOldRop = clientDC.SetROP2( R2_XORPEN );
@@ -126,11 +139,11 @@ void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
         clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, point.x, point.y );
         m_oldPt = point;
     }
-        
+
     clientDC.SetROP2( nOldRop );
     clientDC.SelectObject( pOldPen );
     clientDC.SelectObject( pOldBrush );
     pen.DeleteObject( );
-    Invalidate(false );
+    Invalidate( false );
     CScrollView::OnMouseMove( nFlags, point );
 }

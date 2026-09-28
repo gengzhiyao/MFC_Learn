@@ -1,0 +1,52 @@
+﻿// Step19_ActiveXControl.idl: ActiveX 控件项目的类型库源。
+
+// 此文件将由 MIDL 编译器工具处理以
+// 生成类型库(Step19_ActiveXControl.tlb)，该类型库将成为
+// Step19_ActiveXControl.ocx。
+
+#include <olectl.h>
+#include <idispids.h>
+
+[ uuid(05e6855b-e638-45d5-b798-8a7c6f17f183), version(1.0),
+  control ]
+library Step19ActiveXControlLib
+{
+	importlib(STDOLE_TLB);
+
+	//  CStep19ActiveXControlCtrl 的主调度接口
+	[ 
+		uuid(5a3a3dca-965a-4d7b-ab92-d49ce81dea7d)
+	]
+	dispinterface _DStep19ActiveXControl
+	{
+		properties:
+		methods:
+
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+	};
+
+	//  CStep19ActiveXControlCtrl 的事件调度接口
+
+	[ 
+		uuid(daf4e232-181d-4a49-b011-2e079d55cbe6)
+	]
+	dispinterface _DStep19ActiveXControlEvents
+	{
+		properties:
+			//  事件接口没有任何属性
+
+		methods:
+	};
+
+	//  CStep19ActiveXControlCtrl 的类信息
+	[
+		uuid(ca2b8edd-562b-4e6c-b8e7-f0839397949c),
+		control
+	]
+	coclass Step19ActiveXControl
+	{
+		[default] dispinterface _DStep19ActiveXControl;
+		[default, source] dispinterface _DStep19ActiveXControlEvents;
+	};
+
+};
