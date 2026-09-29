@@ -9,8 +9,7 @@
 #include <olectl.h>
 #include <idispids.h>
 
-[ uuid(05e6855b-e638-45d5-b798-8a7c6f17f183), version(1.0),
-  control ]
+[ uuid(05e6855b-e638-45d5-b798-8a7c6f17f183), version(1.0),control ]
 library Step19ActiveXControlLib
 {
 	importlib(STDOLE_TLB);
@@ -24,10 +23,12 @@ library Step19ActiveXControlLib
 		properties:
                 [ id( DISPID_BACKCOLOR ), bindable, requestedit ] OLE_COLOR BackColor;	// Add
                 [ id( DISPID_FORECOLOR ), bindable, requestedit ] OLE_COLOR ForeColor;	// Add
-                [id( 1 )] LONG                                              Interval;	// 自定义属性
+
+                [id( 1 )] LONG                                              Interval;	// (时间间隔) 自定义属性，该属性会显示在 IDE 的属性面板中
 		methods:
 
 			[id(DISPID_ABOUTBOX)] void AboutBox();
+            [id( 2 )] void OnMouseClick( );	// 对应 CStep19ActiveXControlCtrl::OnClicked  两个可以不一致
 	};
 
 	//  CStep19ActiveXControlCtrl 的事件调度接口
@@ -41,7 +42,9 @@ library Step19ActiveXControlLib
 			//  事件接口没有任何属性
 
 		methods:
-	};
+                [id( DISPID_KEYDOWN )] void KeyDown( SHORT * KeyCode, SHORT Shift );
+                [id( 1 )] void              FireNewMinute( );
+        };
 
 	//  CStep19ActiveXControlCtrl 的类信息
 	[
@@ -50,8 +53,14 @@ library Step19ActiveXControlLib
 	]
 	coclass Step19ActiveXControl
 	{
-		[default] dispinterface _DStep19ActiveXControl;
-		[default, source] dispinterface _DStep19ActiveXControlEvents;
+		[default] dispinterface _DStep19ActiveXControl;	// 属性和方法
+		[default, source] dispinterface _DStep19ActiveXControlEvents;	// 事件
 	};
+
+	/**
+	* 事件和属性/方法属于两个完全独立的接口，调度ID的数值可以相同，不会冲突；但是同一个接口内部，调度ID不能重复
+	* !主调度接口存放属性和方法，用于给容器调用
+	* !事件调度接口存放事件，是控件反向回调容器，容器中使用 EVENTSINK_MAP 声明事件接收器，在发生事件时，控件会调用容器实现的方法 (sink,接收器)
+	*/
 
 };

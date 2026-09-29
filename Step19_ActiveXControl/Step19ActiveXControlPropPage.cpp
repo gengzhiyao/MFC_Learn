@@ -36,7 +36,8 @@ BOOL CStep19ActiveXControlPropPage::CStep19ActiveXControlPropPageFactory::Update
 // CStep19ActiveXControlPropPage::CStep19ActiveXControlPropPage - 构造函数
 
 CStep19ActiveXControlPropPage::CStep19ActiveXControlPropPage() :
-	COlePropertyPage(IDD, IDS_STEP19ACTIVEXCONTROL_PPG_CAPTION)
+	COlePropertyPage(IDD, IDS_STEP19ACTIVEXCONTROL_PPG_CAPTION),
+      m_updateInterval( 0 )
 {
 }
 
@@ -44,7 +45,14 @@ CStep19ActiveXControlPropPage::CStep19ActiveXControlPropPage() :
 
 void CStep19ActiveXControlPropPage::DoDataExchange(CDataExchange* pDX)
 {
-	DDP_PostProcessing(pDX);
+    DDX_Text( pDX, IDC_EDIT_Interval, m_updateInterval );	// DDX 对话框数据交换
+	// 手动添加的代码
+	// TODO: 必须先 DDX 再 DDP，这是官方要求
+	// DDP 属性页成员 m_updateInterval 和 ActiveX 控件实例的 Interval COM属性之间的数据交换
+	// ActiveX 控件.Interval 属性 → DDP → 属性页 m_updateInterval → DDX → Edit 编辑框显示
+    // Edit 框内容 → DDX → m_updateInterval → DDP → ActiveX 控件.Interval 属性（触发控件属性修改）
+    DDP_Text( pDX, IDC_EDIT_Interval, m_updateInterval, "Interval" );
+    DDP_PostProcessing( pDX );
 }
 
 // CStep19ActiveXControlPropPage 消息处理程序

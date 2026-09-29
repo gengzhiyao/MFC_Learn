@@ -7,47 +7,54 @@
 
 class CStep19ActiveXControlCtrl : public COleControl
 {
-	DECLARE_DYNCREATE(CStep19ActiveXControlCtrl)
+    DECLARE_DYNCREATE( CStep19ActiveXControlCtrl )
 
 // 构造函数
 public:
-	CStep19ActiveXControlCtrl();
+    CStep19ActiveXControlCtrl( );
 
 // 重写
 public:
-	virtual void OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
-	virtual void DoPropExchange(CPropExchange* pPX);
-	virtual void OnResetState();
+    virtual void OnDraw( CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid );
+    virtual void DoPropExchange( CPropExchange* pPX );
+    virtual void OnResetState( );
 
 // 实现
 protected:
-	~CStep19ActiveXControlCtrl();
+    ~CStep19ActiveXControlCtrl( );
 
-	DECLARE_OLECREATE_EX(CStep19ActiveXControlCtrl)    // 类工厂和 guid
-	DECLARE_OLETYPELIB(CStep19ActiveXControlCtrl)      // GetTypeInfo
-	DECLARE_PROPPAGEIDS(CStep19ActiveXControlCtrl)     // 属性页 ID
-	DECLARE_OLECTLTYPE(CStep19ActiveXControlCtrl)		// 类型名称和杂项状态
+    DECLARE_OLECREATE_EX( CStep19ActiveXControlCtrl )    // 类工厂和 guid
+    DECLARE_OLETYPELIB( CStep19ActiveXControlCtrl )      // GetTypeInfo
+    DECLARE_PROPPAGEIDS( CStep19ActiveXControlCtrl )     // 属性页 ID
+    DECLARE_OLECTLTYPE( CStep19ActiveXControlCtrl )  // 类型名称和杂项状态
 
 // 消息映射
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP( )
 
 // 调度映射
-	DECLARE_DISPATCH_MAP()
+    DECLARE_DISPATCH_MAP( )
 
-	afx_msg void AboutBox();
+    afx_msg void AboutBox( );
 
 // 事件映射
-	DECLARE_EVENT_MAP()
+    DECLARE_EVENT_MAP( )
 
 // 调度和事件 ID
 public:
-	enum {
-		dispIdInterval=1	// 保持和 IDL 文件中的属性 ID 一致
-	};
+    enum
+    {
+        eventidFireNewMinute = 1L,
+        dispIdInterval = 1, // 保持和 IDL 文件中的属性 ID 一致
+        dispIdClick
+    };
     afx_msg void OnTimer( UINT_PTR nIDEvent );
-        afx_msg int  OnCreate( LPCREATESTRUCT lpCreateStruct );
+    afx_msg int  OnCreate( LPCREATESTRUCT lpCreateStruct );
     afx_msg void OnDestroy( );
-        void         OnIntervalChanged( );
-    long             m_interval;
-};
+    void         OnIntervalChanged( );
+    void         OnClicked( );
+    long         m_interval;
 
+private:
+    // FireNewMinute只是辅助函数，最终去调用容器那边的 sink 对象方法 真正调用容器接口的代码藏在 MFC COleControl::FireEvent 内部
+    void FireNewMinute( ) { FireEvent( eventidFireNewMinute, EVENT_PARAM( VTS_NONE ) ); }
+};

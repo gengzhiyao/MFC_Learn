@@ -31,12 +31,16 @@ BEGIN_DISPATCH_MAP( CStep19ActiveXControlCtrl, COleControl )
     DISP_STOCKPROP_BACKCOLOR( ) // Add
     DISP_STOCKPROP_FORECOLOR( ) // Add
     DISP_PROPERTY_NOTIFY_ID( CStep19ActiveXControlCtrl, "Interval", dispIdInterval, m_interval, OnIntervalChanged,VT_I4 )
-    END_DISPATCH_MAP( )
+    DISP_FUNCTION_ID( CStep19ActiveXControlCtrl, "OnMouseClick", dispIdClick, OnClicked, VT_EMPTY, VTS_NONE )
+END_DISPATCH_MAP( )
 
 // 事件映射
 // 事件映射是为了让控件向包含他的容器发送事件
 
 BEGIN_EVENT_MAP( CStep19ActiveXControlCtrl, COleControl )
+    EVENT_STOCK_CLICK( )
+    EVENT_STOCK_KEYDOWN( )
+    EVENT_CUSTOM_ID( "FireNewMinute", eventidFireNewMinute, FireNewMinute, )
 END_EVENT_MAP( )
 
 // 属性页
@@ -97,7 +101,7 @@ BOOL CStep19ActiveXControlCtrl::CStep19ActiveXControlCtrlFactory::UpdateRegistry
 CStep19ActiveXControlCtrl::CStep19ActiveXControlCtrl( )
 {
     InitializeIIDs( &IID_DStep19ActiveXControl, &IID_DStep19ActiveXControlEvents );
-    m_interval = 1;
+    m_interval = 1000;
     // this->SetTimer( 1, 1000, nullptr ); 构造函数中，还没有生成窗口句柄，m_hWnd 为空
 }
 
@@ -125,6 +129,8 @@ void CStep19ActiveXControlCtrl::OnDraw( CDC* pdc, const CRect& rcBounds, const C
     CTime curTime=CTime::GetCurrentTime( );
     CString strTime = curTime.Format(_T("%H:%M:%S"));
     pdc->TextOut( rcBounds.top, rcBounds.left, strTime );
+
+    if ( curTime.GetSecond( ) == 0 ) FireNewMinute( );
 }
 
 // CStep19ActiveXControlCtrl::DoPropExchange - 持久性支持
@@ -134,7 +140,8 @@ void CStep19ActiveXControlCtrl::DoPropExchange( CPropExchange* pPX )
     ExchangeVersion( pPX, MAKELONG( _wVerMinor, _wVerMajor ) );
     COleControl::DoPropExchange( pPX );
 
-        // TODO: 为每个持久的自定义属性调用 PX_ 函数。
+    // TODO: 为每个持久的自定义属性调用 PX_ 函数。
+    PX_Long( pPX, "Interval",m_interval,1000 );
 }
 
 // CStep19ActiveXControlCtrl::OnResetState - 将控件重置为默认状态
@@ -143,7 +150,7 @@ void CStep19ActiveXControlCtrl::OnResetState( )
 {
     COleControl::OnResetState( );  // 重置 DoPropExchange 中找到的默认值
 
-        // TODO:  在此重置任意其他控件状态。
+    // TODO:  在此重置任意其他控件状态。
 }
 
 // CStep19ActiveXControlCtrl::AboutBox - 向用户显示“关于”框
@@ -158,7 +165,7 @@ void CStep19ActiveXControlCtrl::AboutBox( )
 
 void CStep19ActiveXControlCtrl::OnTimer( UINT_PTR nIDEvent )
 {
-    if ( nIDEvent==1)
+    if ( nIDEvent==1&&AmbientUserMode())
         Invalidate( );
         // InvalidateControl();    // 强制重绘控件自身
     COleControl::OnTimer( nIDEvent );
@@ -179,7 +186,12 @@ void CStep19ActiveXControlCtrl::OnDestroy( )
 
 void CStep19ActiveXControlCtrl::OnIntervalChanged( )
 {
-    if ( m_interval < 0 ) m_interval = 1;
+    if ( m_interval < 0 ) m_interval = 1000;
     KillTimer( 1 );
     SetTimer( 1, m_interval, nullptr );
+    BoundPropertyChanged( 1 );  // 绑定的属性的调度 ID 
+    SetModifiedFlag( );
 }
+
+void CStep19ActiveXControlCtrl::OnClicked( ) { AfxMessageBox( "ActiveX 控件被点击" ); }
+
