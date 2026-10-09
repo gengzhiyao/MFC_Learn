@@ -47,11 +47,16 @@ public:
 private:
     CPoint m_mouseDownPt;
     CPoint m_oldPt;
-    bool   m_isBeginDraw;
+
+    std::vector<Graph*> m_graphs;
+
+    Shape m_curShape;
 
 public:
-    afx_msg void OnSelectCircul( );
+    afx_msg void OnSelectCircle( );
     afx_msg void OnSelectPolygon( );
+    afx_msg void OnSelectTriangle( );
+    afx_msg void OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
 };
 
 #ifndef _DEBUG  // Step18_MDIWizardView.cpp 中的调试版本

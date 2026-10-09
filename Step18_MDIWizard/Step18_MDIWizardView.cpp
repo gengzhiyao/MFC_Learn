@@ -13,6 +13,8 @@
 #include "Step18_MDIWizardDoc.h"
 #include "Step18_MDIWizardView.h"
 
+#include "Shape.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -22,7 +24,7 @@
 IMPLEMENT_DYNCREATE( CStep18MDIWizardView, CScrollView )
 
 BEGIN_MESSAGE_MAP( CStep18MDIWizardView, CScrollView )
-        // 标准打印命令
+// 标准打印命令
 ON_COMMAND( ID_FILE_PRINT, &CScrollView::OnFilePrint )
 ON_COMMAND( ID_FILE_PRINT_DIRECT, &CScrollView::OnFilePrint )
 ON_COMMAND( ID_FILE_PRINT_PREVIEW, &CScrollView::OnFilePrintPreview )
@@ -30,16 +32,18 @@ ON_WM_LBUTTONDOWN( )
 ON_WM_LBUTTONUP( )
 ON_WM_MOUSEMOVE( )
 ON_COMMAND( IDS_RECT, &CStep18MDIWizardView::OnSelectRect )
-ON_COMMAND( IDS_CIRCUL, &CStep18MDIWizardView::OnSelectCircul )
+ON_COMMAND( IDS_CIRCUL, &CStep18MDIWizardView::OnSelectCircle )
 ON_COMMAND( IDS_POLYGON, &CStep18MDIWizardView::OnSelectPolygon )
+ON_COMMAND( IDS_TRIANGLE, &CStep18MDIWizardView::OnSelectTriangle )
+ON_WM_KEYDOWN( )
 END_MESSAGE_MAP( )
 
 // CStep18MDIWizardView 构造/析构
 
 CStep18MDIWizardView::CStep18MDIWizardView( ) noexcept
-    : m_isBeginDraw( false ),
-      m_oldPt( 0, 0 ),
-      m_mouseDownPt( 0, 0 )
+    :m_oldPt( 0, 0 ),
+      m_mouseDownPt( 0, 0 ),
+      m_curShape( Shape::None)
 {
 }
 
@@ -60,7 +64,10 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     CStep18MDIWizardDoc* pDoc = GetDocument( );
     ASSERT_VALID( pDoc );
     if ( !pDoc ) return;
-
+    for ( auto it : m_graphs )
+    {
+        it->Draw( pDC );
+    }
     return CView::OnDraw( pDC );
 }
 
@@ -68,7 +75,7 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
 
 BOOL CStep18MDIWizardView::OnPreparePrinting( CPrintInfo* pInfo )
 {
-        // 默认准备
+    // 默认准备
     return DoPreparePrinting( pInfo );
 }
 
@@ -82,10 +89,7 @@ void CStep18MDIWizardView::OnInitialUpdate( )
     return CScrollView::OnInitialUpdate( );
 }
 
-void CStep18MDIWizardView::OnSelectRect( )
-{
-    // Do
-}
+void CStep18MDIWizardView::OnSelectRect( ) { m_curShape = Shape::Rectangle; }
 
 // CStep18MDIWizardView 诊断
 
@@ -105,8 +109,10 @@ CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const // 非调试版�
 
 void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
 {
+    if ( m_curShape == Shape::None ) return;
     SetCapture( );
-    m_isBeginDraw = true;
+    m_graphs.push_back( GraphFactory::GetInstance( ).Create( m_curShape ) );   // 根据当前点击 创建图形
+    m_graphs.back( )->AddVertex( point );
     m_mouseDownPt = point;
     m_oldPt = point;
     CScrollView::OnLButtonDown( nFlags, point );
@@ -114,19 +120,22 @@ void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
 
 void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
 {
+    if ( m_curShape == Shape::None ) return;
     ReleaseCapture( );
-    m_isBeginDraw = false;
+    m_graphs.back( )->AddVertex( point );
+
     CScrollView::OnLButtonUp( nFlags, point );
 }
 
 void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
 {
+    if ( nFlags != MK_LBUTTON&&m_curShape==Shape::None ) return;
     CDC* pDC = GetDC( );
     HDC  hDC = ::GetDC( this->GetSafeHwnd( ) );
     CDC* pSameDC = CDC::FromHandle( hDC );
     if ( pDC->m_hDC == pSameDC->m_hDC )
     {
-        AfxMessageBox( L"一致的DC" );  // CS_OWNDC
+        TRACE( L"一致的DC" );  // CS_OWNDC
     }
     CClientDC clientDC( this );
     CPen      pen;
@@ -135,27 +144,27 @@ void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
     CBrush* pOldBrush = ( CBrush* )clientDC.SelectStockObject( NULL_BRUSH );
     // 设置异或绘图模式：画一次显示，再画一次就擦掉
     int nOldRop = clientDC.SetROP2( R2_XORPEN );
-    if ( m_isBeginDraw )
-    {
-        clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, m_oldPt.x, m_oldPt.y );
-        clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, point.x, point.y );
-        m_oldPt = point;
-    }
+
+    clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, m_oldPt.x, m_oldPt.y );
+    clientDC.Rectangle( m_mouseDownPt.x, m_mouseDownPt.y, point.x, point.y );
+    m_oldPt = point;
 
     clientDC.SetROP2( nOldRop );
     clientDC.SelectObject( pOldPen );
     clientDC.SelectObject( pOldBrush );
     pen.DeleteObject( );
-    Invalidate( false );
+    // Invalidate( false );
     CScrollView::OnMouseMove( nFlags, point );
 }
 
-void CStep18MDIWizardView::OnSelectCircul( )
-{
-     // Do
-}
+void CStep18MDIWizardView::OnSelectCircle( ) { m_curShape = Shape::Circle; }
 
-void CStep18MDIWizardView::OnSelectPolygon( )
+void CStep18MDIWizardView::OnSelectPolygon( ) { m_curShape = Shape::Polygon; }
+
+void CStep18MDIWizardView::OnSelectTriangle( ) { m_curShape = Shape::Triangle; }
+
+void CStep18MDIWizardView::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags )
 {
-    // Do
+    if ( nChar == VK_F5 ) Invalidate( );
+    CScrollView::OnKeyDown( nChar, nRepCnt, nFlags );
 }

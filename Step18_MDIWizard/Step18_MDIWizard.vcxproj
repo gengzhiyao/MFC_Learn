@@ -203,6 +203,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Step18_MDIWizard.cpp" />
     <ClCompile Include="Step18_MDIWizardDoc.cpp" />
     <ClCompile Include="Step18_MDIWizardView.cpp" />
