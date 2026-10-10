@@ -12,6 +12,11 @@
 #define new DEBUG_NEW
 #endif
 
+/**
+* 该项目需要作为 32 位程序编译 否则会报错
+* 需要配合 Tstcon.exe 以及 oleview.exe
+*/
+
 IMPLEMENT_DYNCREATE( CStep19ActiveXControlCtrl, COleControl )
 
 // 消息映射

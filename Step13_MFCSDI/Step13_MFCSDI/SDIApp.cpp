@@ -67,6 +67,9 @@ CMyView::~CMyView( )
 }
 
 /// MFC中，应用程序类处理的消息是ONCOMMAND，其他消息基本到不了这里
+/// 消息分为两种大类：COMMAND/MESSAGE 
+/// * 普通的内置消息WM_XXX和自定义消息同属MESSAGE，消息直接发给目标窗口，不会走 MFC 命令路由
+/// * COMMAND 消息是菜单、按钮、工具栏点击产生的消息，会走MFC的专属命令路由：View → Doc → MainFrame → App
 BEGIN_MESSAGE_MAP( CMyFrame, CFrameWnd )
 ON_WM_CREATE( )
 ON_WM_CREATE( )
