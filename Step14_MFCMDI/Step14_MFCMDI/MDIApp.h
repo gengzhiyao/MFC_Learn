@@ -16,6 +16,11 @@ private:
     CMyStroke* m_pStroke;
 
 public:
+    CMyDoc1( )
+        : m_pStroke( nullptr )
+    {
+    }
+    ~CMyDoc1( );
     virtual void Serialize( CArchive& ar ) override;
     DECLARE_DYNCREATE( CMyDoc1 )
     DECLARE_MESSAGE_MAP( )
@@ -31,9 +36,25 @@ IMPLEMENT_DYNCREATE( CMyDoc2, CDocument )
 
 class CMyView : public CView
 {
+private:
+    CPoint m_startPt;
+    CPoint m_endPt;
+    char   m_type;
+
 public:
+    CObArray m_array;
+
+public:
+    ~CMyView( );
     virtual void OnDraw( CDC* pDC );
+    void         OnLButtonDown( UINT, CPoint );
+    void         OnLButtonUp( UINT, CPoint );
     DECLARE_DYNCREATE( CMyView )
+    DECLARE_MESSAGE_MAP( )
+    afx_msg void OnDot( );
+    afx_msg void OnLine( );
+    afx_msg void OnRect( );
+    afx_msg void OnEllipse( );
 };
 
 IMPLEMENT_DYNCREATE( CMyView, CView )
@@ -108,3 +129,18 @@ void CMyStroke::Serialize( CArchive& ar )
         ar >> m_str >> m_i >> m_rect;
     }
 }
+
+class CGraph : public CObject
+{
+    DECLARE_SERIAL( CGraph )
+public:
+    CGraph( ) = default;
+    CGraph( char type, CPoint start, CPoint end );
+    virtual void Serialize( CArchive& ar ) override;
+    void         DrawGraph( CDC* pDC );
+
+public:
+    char   m_type;
+    CPoint m_ptOrigin;
+    CPoint m_ptEnd;
+};
