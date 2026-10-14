@@ -14,6 +14,7 @@
 #include "Step18_MDIWizardView.h"
 
 #include "Shape.h"
+#include "cmdobj.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -33,17 +34,19 @@ ON_WM_LBUTTONUP( )
 ON_WM_MOUSEMOVE( )
 ON_COMMAND( IDS_RECT, &CStep18MDIWizardView::OnSelectRect )
 ON_COMMAND( IDS_CIRCUL, &CStep18MDIWizardView::OnSelectCircle )
-ON_COMMAND( IDS_POLYGON, &CStep18MDIWizardView::OnSelectPolygon )
+ON_COMMAND( IDS_POLYLINE, &CStep18MDIWizardView::OnSelectPolyline )
 ON_COMMAND( IDS_TRIANGLE, &CStep18MDIWizardView::OnSelectTriangle )
+ON_COMMAND( IDS_LINE, &CStep18MDIWizardView::OnSelectLine )
 ON_WM_KEYDOWN( )
+ON_WM_LBUTTONDBLCLK( )
 END_MESSAGE_MAP( )
 
 // CStep18MDIWizardView 构造/析构
 
 CStep18MDIWizardView::CStep18MDIWizardView( ) noexcept
-    :m_oldPt( 0, 0 ),
+    : m_oldPt( 0, 0 ),
       m_mouseDownPt( 0, 0 ),
-      m_curShape( Shape::None)
+      m_pCurCmd( nullptr )
 {
 }
 
@@ -64,7 +67,7 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     CStep18MDIWizardDoc* pDoc = GetDocument( );
     ASSERT_VALID( pDoc );
     if ( !pDoc ) return;
-    for ( auto it : m_graphs )
+    for ( auto it : m_commands )
     {
         it->Draw( pDC );
     }
@@ -89,8 +92,6 @@ void CStep18MDIWizardView::OnInitialUpdate( )
     return CScrollView::OnInitialUpdate( );
 }
 
-void CStep18MDIWizardView::OnSelectRect( ) { m_curShape = Shape::Rectangle; }
-
 // CStep18MDIWizardView 诊断
 
 #ifdef _DEBUG
@@ -109,10 +110,15 @@ CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const // 非调试版�
 
 void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
 {
-    if ( m_curShape == Shape::None ) return;
+    if ( m_pCurCmd == nullptr ) return;
     SetCapture( );
-    m_graphs.push_back( GraphFactory::GetInstance( ).Create( m_curShape ) );   // 根据当前点击 创建图形
-    m_graphs.back( )->AddVertex( point );
+    // m_graphs.push_back( GraphFactory::GetInstance( ).Create( m_curShape ) );   // 根据当前点击 创建图形
+    Shape type = m_pCurCmd->GetOwnerGraph( )->GetType( );
+    if ( type != Shape::Polyline || ( type == Shape::Polyline && static_cast<GPolyline*>( m_pCurCmd->GetOwnerGraph() )->IsNew() ) ) // 需要设置 Done
+        m_commands.push_back( GraphFactory::GetInstance( ).Create( type ) );   // 根据当前点击 创建图形 
+    
+        
+    m_commands.back( )->GetOwnerGraph( )->AddVertex( point );
     m_mouseDownPt = point;
     m_oldPt = point;
     CScrollView::OnLButtonDown( nFlags, point );
@@ -120,23 +126,23 @@ void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
 
 void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
 {
-    if ( m_curShape == Shape::None ) return;
+    if ( m_pCurCmd == nullptr ) return;
     ReleaseCapture( );
-    m_graphs.back( )->AddVertex( point );
+    Shape type = m_pCurCmd->GetOwnerGraph( )->GetType( );
+    if ( type!=Shape::Polyline)
+        m_commands.back( )->GetOwnerGraph( )->AddVertex( point );
 
     CScrollView::OnLButtonUp( nFlags, point );
 }
 
 void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
 {
-    if ( nFlags != MK_LBUTTON&&m_curShape==Shape::None ) return;
+    if ( nFlags != MK_LBUTTON && m_pCurCmd == nullptr ) return;
     CDC* pDC = GetDC( );
     HDC  hDC = ::GetDC( this->GetSafeHwnd( ) );
     CDC* pSameDC = CDC::FromHandle( hDC );
-    if ( pDC->m_hDC == pSameDC->m_hDC )
-    {
-        TRACE( L"一致的DC" );  // CS_OWNDC
-    }
+    // pDC->m_hDC == pSameDC->m_hDC "一致的DC"
+
     CClientDC clientDC( this );
     CPen      pen;
     pen.CreatePen( PS_SOLID, 2, COLORREF( RGB( 255, 0, 0 ) ) );
@@ -156,15 +162,22 @@ void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
     // Invalidate( false );
     CScrollView::OnMouseMove( nFlags, point );
 }
-
-void CStep18MDIWizardView::OnSelectCircle( ) { m_curShape = Shape::Circle; }
-
-void CStep18MDIWizardView::OnSelectPolygon( ) { m_curShape = Shape::Polygon; }
-
-void CStep18MDIWizardView::OnSelectTriangle( ) { m_curShape = Shape::Triangle; }
+void CStep18MDIWizardView::OnSelectRect( ) { m_pCurCmd.reset( new RectangleCmd ); }
+void CStep18MDIWizardView::OnSelectCircle( ) { m_pCurCmd.reset( new CircleCmd ); }
+void CStep18MDIWizardView::OnSelectPolyline( ) { m_pCurCmd.reset( new PolylineCmd ); }
+void CStep18MDIWizardView::OnSelectTriangle( ) { m_pCurCmd.reset( new TriangleCmd ); }
+void CStep18MDIWizardView::OnSelectLine( ) { m_pCurCmd.reset( new LineCmd ); }
 
 void CStep18MDIWizardView::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags )
 {
     if ( nChar == VK_F5 ) Invalidate( );
     CScrollView::OnKeyDown( nChar, nRepCnt, nFlags );
+}
+
+void CStep18MDIWizardView::OnLButtonDblClk( UINT nFlags, CPoint point )
+{
+    if ( m_pCurCmd->GetOwnerGraph( )->GetType( ) == Shape::Polyline )
+        static_cast<GPolyline*>( m_pCurCmd->GetOwnerGraph( ) )->Done( );
+
+    CScrollView::OnLButtonDblClk( nFlags, point );
 }

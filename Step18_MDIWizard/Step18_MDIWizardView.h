@@ -3,7 +3,8 @@
 //
 
 #pragma once
-
+#include <memory>
+#include "DrawCommand.h"
 class CStep18MDIWizardView : public CScrollView
 {
 protected: // 仅从序列化创建
@@ -48,15 +49,17 @@ private:
     CPoint m_mouseDownPt;
     CPoint m_oldPt;
 
-    std::vector<Graph*> m_graphs;
+    std::vector<IDrawCommand*> m_commands;
 
-    Shape m_curShape;
+    std::unique_ptr<IDrawCommand> m_pCurCmd;
 
 public:
     afx_msg void OnSelectCircle( );
-    afx_msg void OnSelectPolygon( );
+    afx_msg void OnSelectPolyline( );
     afx_msg void OnSelectTriangle( );
     afx_msg void OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
+    afx_msg void OnSelectLine( );
+    afx_msg void OnLButtonDblClk( UINT nFlags, CPoint point );
 };
 
 #ifndef _DEBUG  // Step18_MDIWizardView.cpp 中的调试版本

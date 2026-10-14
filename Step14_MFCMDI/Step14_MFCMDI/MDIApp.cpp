@@ -120,11 +120,12 @@ CMyDoc1::~CMyDoc1( ) { delete m_pStroke; }
         for ( int i = 0; i < view->m_array.GetCount( ); i++ )
         {
             ar.WriteObject( view->m_array[i] );
+            // ar << view->m_array[i];  // CArchive 重载了 << 并调用 WriteObject
         }
     }
     else
     {
-        CMyStroke* m_pStroke = ( CMyStroke* )ar.ReadObject( RUNTIME_CLASS( CMyStroke ) );
+        CMyStroke* m_pStroke = ( CMyStroke* )ar.ReadObject( RUNTIME_CLASS( CMyStroke ) );   // CRuntimeClass::FromName(CRuntimeClass::m_lpszClassName) 比较CRuntimeClass中的字符串，而返回一个CRuntimeClass 从而调用 CreateObject()
         int        nCount;
         ar >> nCount;
         CGraph* graph;

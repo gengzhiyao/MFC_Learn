@@ -25,6 +25,8 @@ void RegisterAll( )
     GRectangle::Register( );
     GCircle::Register( );
     GTriangle::Register( );
+    GLine::Register( );
+    GPolyline::Register( );
 }
 }    // namespace
 
