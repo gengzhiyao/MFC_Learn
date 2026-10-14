@@ -56,7 +56,7 @@ BOOL CStep18MDIWizardView::PreCreateWindow( CREATESTRUCT& cs )
 {
     // Windows 中维护一批可复用的DC，每次调用 GetDC 都会拿一个，ReleaseDC 归还
     /// 当窗口注册时带 CS_OWNDC 时，表明自己私有 DC ，每次调用 GetDC 时返回同一个DC
-    cs.lpszClass = AfxRegisterWndClass( CS_OWNDC | CS_HREDRAW | CS_VREDRAW, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ), NULL );
+    cs.lpszClass = AfxRegisterWndClass( CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ), NULL );
     return CScrollView::PreCreateWindow( cs );
 }
 
@@ -114,10 +114,12 @@ void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
     SetCapture( );
     // m_graphs.push_back( GraphFactory::GetInstance( ).Create( m_curShape ) );   // 根据当前点击 创建图形
     Shape type = m_pCurCmd->GetOwnerGraph( )->GetType( );
-    if ( type != Shape::Polyline || ( type == Shape::Polyline && static_cast<GPolyline*>( m_pCurCmd->GetOwnerGraph() )->IsNew() ) ) // 需要设置 Done
-        m_commands.push_back( GraphFactory::GetInstance( ).Create( type ) );   // 根据当前点击 创建图形 
-    
-        
+    if ( type != Shape::Polyline || ( type == Shape::Polyline && static_cast<GPolyline*>( m_pCurCmd->GetOwnerGraph( ) )->m_isEditing == false ) ) // 需要设置 Done
+    {
+        m_commands.push_back( GraphFactory::GetInstance( ).Create( type ) );   // 根据当前点击 创建图形
+        static_cast<GPolyline*>( m_pCurCmd->GetOwnerGraph( ) )->m_isEditing = true;
+    }
+
     m_commands.back( )->GetOwnerGraph( )->AddVertex( point );
     m_mouseDownPt = point;
     m_oldPt = point;
@@ -129,8 +131,7 @@ void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
     if ( m_pCurCmd == nullptr ) return;
     ReleaseCapture( );
     Shape type = m_pCurCmd->GetOwnerGraph( )->GetType( );
-    if ( type!=Shape::Polyline)
-        m_commands.back( )->GetOwnerGraph( )->AddVertex( point );
+    if ( type != Shape::Polyline ) m_commands.back( )->GetOwnerGraph( )->AddVertex( point );
 
     CScrollView::OnLButtonUp( nFlags, point );
 }
@@ -176,8 +177,9 @@ void CStep18MDIWizardView::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags )
 
 void CStep18MDIWizardView::OnLButtonDblClk( UINT nFlags, CPoint point )
 {
-    if ( m_pCurCmd->GetOwnerGraph( )->GetType( ) == Shape::Polyline )
-        static_cast<GPolyline*>( m_pCurCmd->GetOwnerGraph( ) )->Done( );
-
+    // clang-format off
+    if ( m_pCurCmd->GetOwnerGraph( )->GetType( ) == Shape::Polyline ) 
+        static_cast<GPolyline*>( m_pCurCmd->GetOwnerGraph( ) )->m_isEditing = false;
+    // clang-format on
     CScrollView::OnLButtonDblClk( nFlags, point );
 }
