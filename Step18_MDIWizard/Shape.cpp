@@ -24,12 +24,14 @@ GRectangle::GRectangle( )
 void GRectangle::Draw( CDC* pDC )
 {
     // CPen pen=CPen::CreatePen
-    pDC->Rectangle( m_vertices[0].x, m_vertices[0].y, m_vertices[1].x, m_vertices[1].y );
+    CPoint startPt = m_vertices.front( );
+    CPoint endPt = m_vertices.back( );
+    pDC->Rectangle( startPt.x, startPt.y, endPt.x, endPt.y );
 }
 
 void GRectangle::Register( )
 {
-    GraphFactory::GetInstance( ).Register( Shape::Rectangle, []( ) -> IDrawCommand* { return new RectangleCmd; } );
+    GraphFactory::GetInstance( ).Register( Shape::Rectangle, []( ) -> Graph* { return new GRectangle; } );
 }
 
 GraphFactory& GraphFactory::GetInstance( )
@@ -40,7 +42,7 @@ GraphFactory& GraphFactory::GetInstance( )
 
 void GraphFactory::Register( Shape type, Method method ) { m_factoryMap[type] = method; }
 
-IDrawCommand* GraphFactory::Create( Shape shape ) const
+Graph* GraphFactory::Create( Shape shape ) const
 {
     auto it = m_factoryMap.find( shape );
     if ( it == m_factoryMap.end( ) ) return nullptr;
@@ -52,11 +54,16 @@ GCircle::GCircle( )
 {
 }
 
-void GCircle::Draw( CDC* pDC ) { pDC->Ellipse( m_vertices[0].x, m_vertices[0].y, m_vertices[1].x, m_vertices[1].y ); }
+void GCircle::Draw( CDC* pDC )
+{
+    CPoint startPt = m_vertices.front( );
+    CPoint endPt = m_vertices.back( );
+    pDC->Ellipse( startPt.x, startPt.y, endPt.x, endPt.y );
+}
 
 void GCircle::Register( )
 {
-    GraphFactory::GetInstance( ).Register( Shape::Circle, []( ) -> IDrawCommand* { return new CircleCmd; } );
+    GraphFactory::GetInstance( ).Register( Shape::Circle, []( ) -> Graph* { return new GCircle; } );
 }
 
 GTriangle::GTriangle( )
@@ -67,17 +74,19 @@ GTriangle::GTriangle( )
 void GTriangle::Draw( CDC* pDC )
 {
     // --- 三角形绘制开始 ---
-    CPoint top( m_vertices[0].x + ( m_vertices[1].x - m_vertices[0].x ) / 2, m_vertices[0].y );
+    CPoint startPt = m_vertices.front( );
+    CPoint endPt = m_vertices.back( );
+    CPoint top( startPt.x + ( endPt.x - startPt.x ) / 2, startPt.y );
     pDC->MoveTo( top );  // 顶点
-    pDC->LineTo( m_vertices[0].x, m_vertices[1].y );    // 左
-    pDC->LineTo( m_vertices[1].x, m_vertices[1].y );    // 右
+    pDC->LineTo( startPt.x, endPt.y );    // 左
+    pDC->LineTo( endPt.x, endPt.y );    // 右
     pDC->LineTo( top );
     // --- 三角形绘制结束 ---
 }
 
 void GTriangle::Register( )
 {
-    GraphFactory::GetInstance( ).Register( Shape::Triangle, []( ) -> IDrawCommand* { return new TriangleCmd; } );
+    GraphFactory::GetInstance( ).Register( Shape::Triangle, []( ) -> Graph* { return new GTriangle; } );
 }
 
 GLine::GLine( )
@@ -88,19 +97,21 @@ GLine::GLine( )
 void GLine::Draw( CDC* pDC )
 {
     // --- 绘制开始 ---
-    pDC->MoveTo( m_vertices[0].x, m_vertices[0].y );
-    pDC->LineTo( m_vertices[1].x, m_vertices[1].y );
+    CPoint startPt = m_vertices.front( );
+    CPoint endPt = m_vertices.back( );
+    pDC->MoveTo( startPt.x, startPt.y );
+    pDC->LineTo( endPt.x, endPt.y );
     // --- 绘制结束 ---
 }
 
 void GLine::Register( )
 {
-    GraphFactory::GetInstance( ).Register( Shape::Line, []( ) -> IDrawCommand* { return new LineCmd; } );
+    GraphFactory::GetInstance( ).Register( Shape::Line, []( ) -> Graph* { return new GLine; } );
 }
 
 void GPolyline::Register( )
 {
-    GraphFactory::GetInstance( ).Register( Shape::Polyline, []( ) -> IDrawCommand* { return new PolylineCmd; } );
+    GraphFactory::GetInstance( ).Register( Shape::Polyline, []( ) -> Graph* { return new GPolyline; } );
 }
 
 GPolyline::GPolyline( )

@@ -35,16 +35,18 @@ protected:
     std::vector<CPoint> m_vertices;
 
     unsigned short m_layer;
+
+    friend class CStep18MDIWizardView;
 };
 class IDrawCommand;
 class GraphFactory
 {
 public:
-    using Method = std::function<IDrawCommand*( )>;
+    using Method = std::function<Graph*( )>;
     static GraphFactory& GetInstance( );    // Singleton
 
     void          Register( Shape type, Method method );
-    IDrawCommand* Create( Shape shape ) const;
+    Graph* Create( Shape shape ) const;
 
 private:
     std::unordered_map<Shape, Method> m_factoryMap;
@@ -92,5 +94,5 @@ public:
     GPolyline( );
     static void Register( );
 
-    void Draw( CDC* pDC ) override;
+    void Draw( CDC* pDC) override;
 };

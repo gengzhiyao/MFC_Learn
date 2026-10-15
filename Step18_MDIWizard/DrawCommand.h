@@ -16,4 +16,7 @@ protected:
     Graph* m_pGraph;
 };
 
-inline void IDrawCommand::Draw( CDC* pDC ) { m_pGraph->Draw( pDC ); };
+inline void IDrawCommand::Draw( CDC* pDC ) { 
+    
+   // m_pGraph->Draw( pDC ); 
+};

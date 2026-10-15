@@ -5,6 +5,7 @@
 #pragma once
 #include <memory>
 #include "DrawCommand.h"
+#include <vector>
 class CStep18MDIWizardView : public CScrollView
 {
 protected: // 仅从序列化创建
@@ -15,6 +16,12 @@ protected: // 仅从序列化创建
 public:
     CStep18MDIWizardDoc* GetDocument( ) const;
 
+    class utils
+    {
+    public:
+        static void   LPtoDP( CView* pWnd, CPoint& src );
+        static void DPtoLP( CView* pWnd, CPoint& src );
+    };
 // 操作
 public:
 // 重写
@@ -49,9 +56,10 @@ private:
     CPoint m_mouseDownPt;
     CPoint m_oldPt;
 
-    std::vector<IDrawCommand*> m_commands;
+    std::vector<Graph*> m_graphs;
 
-    std::unique_ptr<IDrawCommand> m_pCurCmd;
+    Graph* m_pCurGraph;
+    Shape m_curTool;
 
 public:
     afx_msg void OnSelectCircle( );

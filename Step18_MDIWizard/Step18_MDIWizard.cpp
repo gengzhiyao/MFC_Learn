@@ -134,7 +134,7 @@ BOOL CStep18MDIWizardApp::InitInstance( )
     // 用 /RegServer、/Register、/Unregserver 或 /Unregister 启动应用程序，则返回 FALSE。
     if ( !ProcessShellCommand( cmdInfo ) ) return FALSE;
     // 主窗口已初始化，因此显示它并对其进行更新
-    pMainFrame->ShowWindow( SW_SHOWMAXIMIZED );
+    pMainFrame->ShowWindow( SW_SHOW );
     pMainFrame->UpdateWindow( );
     return TRUE;
 }
