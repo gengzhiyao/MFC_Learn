@@ -86,17 +86,11 @@ public:
 class GPolyline final : public Graph
 {
 public:
-    enum class status : unsigned char
-    {
-        Start,
-        Editing,
-        End
-    };
-
-    mutable status m_status;
+    mutable bool m_isEditing;
 
 public:
     GPolyline( );
-    void        Draw( CDC* pDC ) override;
     static void Register( );
-};  
+
+    void Draw( CDC* pDC ) override;
+};

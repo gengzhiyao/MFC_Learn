@@ -104,7 +104,8 @@ void GPolyline::Register( )
 }
 
 GPolyline::GPolyline( )
-    : Graph( Shape::Polyline )
+    : Graph( Shape::Polyline ),
+      m_isEditing( false )
 {
 }
 
