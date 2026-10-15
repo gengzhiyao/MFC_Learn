@@ -99,4 +99,4 @@ public:
     GPolyline( );
     void        Draw( CDC* pDC ) override;
     static void Register( );
-};
+};  
