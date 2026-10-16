@@ -7,7 +7,7 @@
 // SHARED_HANDLERS 可以在实现预览、缩略图和搜索筛选器句柄的
 // ATL 项目中进行定义，并允许与该项目共享文档代码。
 #ifndef SHARED_HANDLERS
-#include "Step18_MDIWizard.h"
+    #include "Step18_MDIWizard.h"
 #endif
 
 #include "Step18_MDIWizardDoc.h"
@@ -17,7 +17,7 @@
 #include "cmdobj.h"
 
 #ifdef _DEBUG
-#define new DEBUG_NEW
+    #define new DEBUG_NEW
 #endif
 
 // CStep18MDIWizardView
@@ -51,7 +51,9 @@ CStep18MDIWizardView::CStep18MDIWizardView( ) noexcept
 {
 }
 
-CStep18MDIWizardView::~CStep18MDIWizardView( ) {}
+CStep18MDIWizardView::~CStep18MDIWizardView( )
+{
+}
 
 BOOL CStep18MDIWizardView::PreCreateWindow( CREATESTRUCT& cs )
 {
@@ -98,7 +100,8 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
 {
     CStep18MDIWizardDoc* pDoc = GetDocument( );
     ASSERT_VALID( pDoc );
-    if ( !pDoc ) return;
+    if ( !pDoc )
+        return;
 #if 1
     CBitmap bmp;
     CRect   clientSize;
@@ -115,7 +118,7 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     // OnPrepareDC中更改了屏幕 DC 的滚动方向，新建立的内存 DC 没有，所以要实时同步
     CPoint p = pDC->GetViewportOrg( );
     dcMemory.SetViewportOrg( p );
-    dcMemory.FillSolidRect( &rc, RGB( 255, 255, 255 ) ); 
+    dcMemory.FillSolidRect( &rc, RGB( 255, 255, 255 ) );
     for ( auto it : m_graphs )
     {
         it->Draw( &dcMemory );
@@ -124,7 +127,7 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     pDC->BitBlt( rc.left, rc.top, clientSize.Width( ), clientSize.Height( ), &dcMemory, rc.left, rc.top, SRCCOPY );
     dcMemory.SelectObject( pOldBitmap );
 #else
-#if 1
+    #if 1
     CSize   clientRect = GetTotalSize( );
     CBitmap cBmp;
     cBmp.CreateCompatibleBitmap( pDC, clientRect.cx, clientRect.cy );
@@ -142,7 +145,7 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     pDC->BitBlt( rc.left, rc.top, clientRect.cx, clientRect.cy, &dcMemory, rc.left, rc.top, SRCCOPY );
     dcMemory.SelectObject( pOldBitmap );
     // --- end ---
-#else
+    #else
     CSize   cSize = GetTotalSize( );
     CBitmap cBmp;
     cBmp.CreateCompatibleBitmap( pDC, cSize.cx, cSize.cy ); // 位图没有坐标原点的概念，只有像素点的概念，可以认为位图永远是以坐标 (0,0) 为原点，所以设置的大一点
@@ -159,15 +162,15 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     // 如果切换到位图中输出文字 TextOut(0,0)，那么会在位图的(x,y)处输出文字。因而有以下公式：
     // 位图像素点的坐标 = 逻辑坐标 + 视口原点 就是这么来的
     CPoint org = pDC->GetViewportOrg( );
-#ifdef SET_VIEWPORT
+        #ifdef SET_VIEWPORT
     dcMemory.SetViewportOrg( org.x, org.y );    // 将逻辑坐标系的原点映射到内存 DC 的设备坐标的 (org.x, org.y)，后续所有绘图都以此为基准点，绘制到位图中，因为位图的原点和设备坐标永远一致
-#endif
+        #endif
     for ( auto it : m_graphs )
     {
         it->Draw( &dcMemory );  // 将图案绘制逻辑坐标中，那么点 (m,n) 在内存 DC 的位图中对应的像素点就是 (m+org.x,n+org.y)
     }
 
-#ifdef SET_VIEWPORT
+        #ifdef SET_VIEWPORT
     dcMemory.SetViewportOrg( 0, 0 );
     // BitBlt 的坐标参数说明了从源 DC 的位置 (xSrc,ySrc) 拷贝 Width*Height 个像素到目标 DC 中
     // 分析一下 DC 设置了 ViewPort 之后，为什么要将源 DC 的坐标改为 org.x/y (最好自己手绘一下理解)
@@ -178,12 +181,12 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     /// 设备坐标 = (逻辑坐标 - 窗口原点) * 缩放比例 + 视口原点
     pDC->BitBlt( 0, 0, cSize.cx, cSize.cy, &dcMemory, org.x, org.y, SRCCOPY );  // BitBlt 使用逻辑坐标 目标 DC 的 (0,0)对应设备坐标(org.x,org.y)
     // 将源 DC 的逻辑坐标点(xSrc,ySrc) 复制到目标 DC 的逻辑坐标点(xDst,yDst) 中，BitBlt 函数中会再次将逻辑坐标转为设备坐标以确定拷贝的矩形区域
-#else
+        #else
     pDC->BitBlt( 0, 0, cSize.cx, cSize.cy, &dcMemory, /* org.x*/ 0, /*org.y*/ 0, SRCCOPY );
-#endif
+        #endif
     dcMemory.SelectObject( pOldBitmap );
     // --- end ---
-#endif
+    #endif
 #endif
     return CView::OnDraw( pDC );
 }
@@ -196,9 +199,13 @@ BOOL CStep18MDIWizardView::OnPreparePrinting( CPrintInfo* pInfo )
     return DoPreparePrinting( pInfo );
 }
 
-void CStep18MDIWizardView::OnBeginPrinting( CDC* /*pDC*/, CPrintInfo* /*pInfo*/ ) {}
+void CStep18MDIWizardView::OnBeginPrinting( CDC* /*pDC*/, CPrintInfo* /*pInfo*/ )
+{
+}
 
-void CStep18MDIWizardView::OnEndPrinting( CDC* /*pDC*/, CPrintInfo* /*pInfo*/ ) {}
+void CStep18MDIWizardView::OnEndPrinting( CDC* /*pDC*/, CPrintInfo* /*pInfo*/ )
+{
+}
 
 void CStep18MDIWizardView::OnInitialUpdate( )
 {
@@ -209,9 +216,15 @@ void CStep18MDIWizardView::OnInitialUpdate( )
 // CStep18MDIWizardView 诊断
 
 #ifdef _DEBUG
-void CStep18MDIWizardView::AssertValid( ) const { CScrollView::AssertValid( ); }
+void CStep18MDIWizardView::AssertValid( ) const
+{
+    CScrollView::AssertValid( );
+}
 
-void CStep18MDIWizardView::Dump( CDumpContext& dc ) const { CScrollView::Dump( dc ); }
+void CStep18MDIWizardView::Dump( CDumpContext& dc ) const
+{
+    CScrollView::Dump( dc );
+}
 
 CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const // 非调试版本是内联的
 {
@@ -224,7 +237,8 @@ CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const // 非调试版�
 
 void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
 {
-    if ( m_curTool == Shape::None ) return;
+    if ( m_curTool == Shape::None )
+        return;
     SetCapture( );
 
     if ( m_curTool != Shape::Polyline || ( m_curTool == Shape::Polyline && static_cast<GPolyline*>( m_pCurGraph )->m_isEditing == true ) ) // 需要设置 Done
@@ -241,7 +255,8 @@ void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
 
 void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
 {
-    if ( m_curTool == Shape::None ) return;
+    if ( m_curTool == Shape::None )
+        return;
     ReleaseCapture( );
     utils::DPtoLP( this, point );
     m_pCurGraph->m_vertices.back( ) = point;
@@ -255,7 +270,8 @@ void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
 
 void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
 {
-    if ( nFlags != MK_LBUTTON && m_curTool == Shape::None ) return;
+    if ( nFlags != MK_LBUTTON && m_curTool == Shape::None )
+        return;
 
     CClientDC clientDC( this ); // CDC* pDC = GetDC( );    // pDC = CDC::FromHandle( ::GetDC( this->GetSafeHwnd( ) ) );
     CPen      pen;
@@ -265,7 +281,7 @@ void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
     if ( m_pCurGraph )
     {
         utils::DPtoLP( this, point );
-        CPoint scroPos= GetScrollPosition( );
+        CPoint scroPos = GetScrollPosition( );
         clientDC.SetViewportOrg( -scroPos );
         m_pCurGraph->m_vertices.back( ) = point;
         m_pCurGraph->Draw( &clientDC );
@@ -285,15 +301,31 @@ void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
     CScrollView::OnMouseMove( nFlags, point );
 }
 
-void CStep18MDIWizardView::OnSelectRect( ) { m_curTool = Shape::Rectangle; }
-void CStep18MDIWizardView::OnSelectCircle( ) { m_curTool = Shape::Circle; }
-void CStep18MDIWizardView::OnSelectPolyline( ) { m_curTool = Shape::Polyline; }
-void CStep18MDIWizardView::OnSelectTriangle( ) { m_curTool = Shape::Triangle; }
-void CStep18MDIWizardView::OnSelectLine( ) { m_curTool = Shape::Line; }
+void CStep18MDIWizardView::OnSelectRect( )
+{
+    m_curTool = Shape::Rectangle;
+}
+void CStep18MDIWizardView::OnSelectCircle( )
+{
+    m_curTool = Shape::Circle;
+}
+void CStep18MDIWizardView::OnSelectPolyline( )
+{
+    m_curTool = Shape::Polyline;
+}
+void CStep18MDIWizardView::OnSelectTriangle( )
+{
+    m_curTool = Shape::Triangle;
+}
+void CStep18MDIWizardView::OnSelectLine( )
+{
+    m_curTool = Shape::Line;
+}
 
 void CStep18MDIWizardView::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags )
 {
-    if ( nChar == VK_F5 ) Invalidate( );
+    if ( nChar == VK_F5 )
+        Invalidate( );
     CScrollView::OnKeyDown( nChar, nRepCnt, nFlags );
 }
 
