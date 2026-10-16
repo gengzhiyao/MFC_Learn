@@ -70,20 +70,20 @@ BreakConstructorInitializers: BeforeColon
 # 每个初始化项独占一行
 PackConstructorInitializers: Never    
 
-# 允许短函数在单行上
-#AllowShortFunctionsOnASingleLine: Inline
+# 短函数（包括空函数体）不合并到单行
+AllowShortFunctionsOnASingleLine: None
 
  # 允许短语法块在单行上
-AllowShortBlocksOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Never
 
 # 总是把短语句放在单行上
-AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortIfStatementsOnASingleLine: Never
 
 # 允许短匿Lambda函数在单行上
 AllowShortLambdasOnASingleLine: All
 
 # 允许合并短循环到单行上
-AllowShortLoopsOnASingleLine: true
+AllowShortLoopsOnASingleLine: false
 
 #大括号开头不保留空行
 KeepEmptyLinesAtTheStartOfBlocks: false
@@ -114,3 +114,11 @@ SpacesInParensOptions:
 
 # 注释前保留4个空格
 SpacesBeforeTrailingComments: 4
+
+# 嵌套的预处理指令逐层缩进
+# BeforeHash: 缩进加在 # 前面
+# AfterHash:  # 保持顶格，缩进加在 # 后面
+IndentPPDirectives: BeforeHash
+
+# 预处理指令的缩进宽度，-1 表示跟随 IndentWidth（4）
+PPIndentWidth: -1
