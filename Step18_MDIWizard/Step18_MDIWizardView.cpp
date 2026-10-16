@@ -117,7 +117,9 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     CDC dcMemory;
     dcMemory.CreateCompatibleDC( pDC );
     CBitmap* pOldBitmap = dcMemory.SelectObject( &cBmp );
-    dcMemory.SetWindowOrg( rc.left, rc.top );
+
+    CPoint org = pDC->GetWindowOrg( );
+    dcMemory.SetWindowOrg( org );
     // ========== 填充整张位图为纯白色 ==========
     dcMemory.FillSolidRect( /*&clientSize*/ &rc, RGB( 255, 255, 255 ) );
     // dcMemory.FillSolidRect( CRect( clientSize.cx,clientSize.cy), RGB( 255, 255, 255 ) );
@@ -125,7 +127,8 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     {
         it->Draw( &dcMemory );
     }
-    pDC->BitBlt( rc.left, rc.top, clientSize.cx, clientSize.cy, &dcMemory, rc.left, rc.top, SRCCOPY );
+
+    pDC->BitBlt( 0, 0, clientSize.cx, clientSize.cy, &dcMemory, 0, 0, SRCCOPY );
     dcMemory.SelectObject( pOldBitmap );
     // --- end ---
 #endif
