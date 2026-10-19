@@ -19,11 +19,18 @@ public:
     class utils
     {
     public:
-        static void   LPtoDP( CView* pWnd, CPoint& src );
+        static void LPtoDP( CView* pWnd, CPoint& src );
         static void DPtoLP( CView* pWnd, CPoint& src );
+
+        enum class MouseStatus
+        {
+            Drawing = 1,
+            Selecting
+        };
     };
 // 操作
-public:
+private:
+    CRect HitTest( CPoint pt );
 // 重写
 public:
     virtual void OnDraw( CDC* pDC );  // 重写以绘制该视图
@@ -48,18 +55,22 @@ protected:
 protected:
     DECLARE_MESSAGE_MAP( )
 public:
-    afx_msg void OnLButtonDown( UINT nFlags, CPoint point );
+    void DrawSelectionRubberband( const CPoint& point );        // 拖动预览
+    void OnLButtonDown( UINT nFlags, CPoint point );
+
     afx_msg void OnLButtonUp( UINT nFlags, CPoint point );
     afx_msg void OnMouseMove( UINT nFlags, CPoint point );
 
 private:
-    CPoint m_mouseDownPt;
-    CPoint m_oldPt;
+    CPoint m_lButtonDownPt;
+    CPoint m_deltaPt;
+    CRect  m_hitRect;
 
     std::vector<Graph*> m_graphs;
 
-    Graph* m_pCurGraph;
-    Shape m_curTool;
+    Graph*             m_pCurGraph;
+    Shape              m_curTool;
+    utils::MouseStatus m_mouseStatus;
 
 public:
     afx_msg void OnSelectCircle( );
@@ -71,5 +82,8 @@ public:
 };
 
 #ifndef _DEBUG  // Step18_MDIWizardView.cpp 中的调试版本
-inline CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const { return reinterpret_cast<CStep18MDIWizardDoc*>( m_pDocument ); }
+inline CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const
+{
+    return reinterpret_cast<CStep18MDIWizardDoc*>( m_pDocument );
+}
 #endif

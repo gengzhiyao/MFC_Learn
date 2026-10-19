@@ -17,6 +17,14 @@
 * 需要配合 Tstcon.exe 以及 oleview.exe
 */
 
+/**
+* OLE/ActiveX 控件编程常见宏说明
+* BEGIN_DISPATCH_MAP：控件向外暴露 COM 方法 / 属性（IDispatch），容器调用控件的方法、读写属性
+* BEGIN_EVENT_MAP：控件向外声明可以触发哪些事件（控件主动通知容器），写在 OCX 控件源码里
+* BEGIN_MESSAGE_MAP：普通 Windows 窗口消息，和普通 MFC 窗口一样，OCX 控件窗口接收原生 Win 消息
+* BEGIN_EVENTSINK_MAP：和 BEGIN_EVENT_MAP 相对应，容器侧接收 OCX 抛出来的事件（事件接收器 sink），写在容器（对话框 / 主窗口）源码
+*/
+
 IMPLEMENT_DYNCREATE( CStep19ActiveXControlCtrl, COleControl )
 
 // 消息映射

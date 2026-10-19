@@ -44,8 +44,7 @@ END_MESSAGE_MAP( )
 // CStep18MDIWizardView 构造/析构
 
 CStep18MDIWizardView::CStep18MDIWizardView( ) noexcept
-    : m_oldPt( 0, 0 ),
-      m_mouseDownPt( 0, 0 ),
+    : m_lButtonDownPt( 0, 0 ),
       m_curTool( Shape::None ),
       m_pCurGraph( nullptr )
 {
@@ -96,12 +95,33 @@ BOOL CStep18MDIWizardView::PreCreateWindow( CREATESTRUCT& cs )
 
 // 视口原点的概念：指的是窗口的逻辑坐标的原点映射到设备坐标上的位置
 
+CRect CStep18MDIWizardView::HitTest( CPoint pt )
+{
+    CRect res;
+    for ( const auto& it : m_graphs )
+    {
+        CRect rect{ it->m_vertices.front( ).x, it->m_vertices.front( ).y, it->m_vertices.back( ).x, it->m_vertices.back( ).y };
+        if ( rect.PtInRect( pt ) )
+        {
+            res = rect;
+            break;
+        }
+    }
+    return res;
+}
+
 void CStep18MDIWizardView::OnDraw( CDC* pDC )
 {
     CStep18MDIWizardDoc* pDoc = GetDocument( );
     ASSERT_VALID( pDoc );
     if ( !pDoc )
         return;
+
+    CRect r;
+    GetClientRect( &r );
+    pDC->FillSolidRect( &r, RGB( 255, 255, 255 ) );
+    pDC->Rectangle( m_hitRect.left + m_deltaPt.x, m_hitRect.top + m_deltaPt.y, m_hitRect.right + m_deltaPt.x, m_hitRect.bottom + m_deltaPt.y );
+    return;
 #if 1
     CBitmap bmp;
     CRect   clientSize;
@@ -235,10 +255,25 @@ CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const // 非调试版�
 
 // CStep18MDIWizardView 消息处理程序
 
+void CStep18MDIWizardView::DrawSelectionRubberband( const CPoint& point )
+{
+    m_hitRect = HitTest( point );
+    CClientDC dc( this );
+    CPen      pen;
+    pen.CreatePen( PS_DOT, 1, COLORREF( RGB( 0, 255, 0 ) ) );
+    dc.SelectObject( &pen );
+    dc.Rectangle( &m_hitRect );
+}
+
 void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
 {
     if ( m_curTool == Shape::None )
+    {
+        DrawSelectionRubberband( point );
+        m_lButtonDownPt = point;
         return;
+    }
+
     SetCapture( );
 
     if ( m_curTool != Shape::Polyline || ( m_curTool == Shape::Polyline && static_cast<GPolyline*>( m_pCurGraph )->m_isEditing == true ) ) // 需要设置 Done
@@ -248,8 +283,6 @@ void CStep18MDIWizardView::OnLButtonDown( UINT nFlags, CPoint point )
     utils::DPtoLP( this, point );
     m_pCurGraph->AddVertex( point );
     m_pCurGraph->AddVertex( point );
-    m_mouseDownPt = point;
-    m_oldPt = point;
     CScrollView::OnLButtonDown( nFlags, point );
 }
 
@@ -270,10 +303,15 @@ void CStep18MDIWizardView::OnLButtonUp( UINT nFlags, CPoint point )
 
 void CStep18MDIWizardView::OnMouseMove( UINT nFlags, CPoint point )
 {
-    if ( nFlags != MK_LBUTTON && m_curTool == Shape::None )
+    if ( nFlags != MK_LBUTTON  )
         return;
-
     CClientDC clientDC( this ); // CDC* pDC = GetDC( );    // pDC = CDC::FromHandle( ::GetDC( this->GetSafeHwnd( ) ) );
+    if ( m_curTool == Shape::None )
+    {
+        m_deltaPt= point - m_lButtonDownPt;
+        // 
+    }
+    
     CPen      pen;
     pen.CreatePen( PS_SOLID, 5, COLORREF( RGB( 0, 0, 0 ) ) );
     CPen*   pOldPen = ( CPen* )clientDC.SelectObject( &pen );
@@ -326,6 +364,10 @@ void CStep18MDIWizardView::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags )
 {
     if ( nChar == VK_F5 )
         Invalidate( );
+    else if ( nChar == VK_ESCAPE )
+    {
+        m_curTool = Shape::None;
+    }
     CScrollView::OnKeyDown( nChar, nRepCnt, nFlags );
 }
 
