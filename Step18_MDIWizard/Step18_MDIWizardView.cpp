@@ -95,6 +95,7 @@ BOOL CStep18MDIWizardView::PreCreateWindow( CREATESTRUCT& cs )
 
 // 视口原点的概念：指的是窗口的逻辑坐标的原点映射到设备坐标上的位置
 
+// todo: 遍历 m_graphs 的外接矩形，找到对应的图形
 CRect CStep18MDIWizardView::HitTest( CPoint pt )
 {
     CRect res;
@@ -117,9 +118,10 @@ void CStep18MDIWizardView::OnDraw( CDC* pDC )
     if ( !pDoc )
         return;
 
-    CRect r;
-    GetClientRect( &r );
-    pDC->FillSolidRect( &r, RGB( 255, 255, 255 ) );
+    //CRect r;
+    //GetClientRect( &r );
+    //pDC->FillSolidRect( &r, RGB( 255, 255, 255 ) );
+    // 完整图形的预览只需要找到这矩形，然后调用图形的draw就好
     pDC->Rectangle( m_hitRect.left + m_deltaPt.x, m_hitRect.top + m_deltaPt.y, m_hitRect.right + m_deltaPt.x, m_hitRect.bottom + m_deltaPt.y );
     return;
 #if 1

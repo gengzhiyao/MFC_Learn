@@ -55,7 +55,7 @@ protected:
 protected:
     DECLARE_MESSAGE_MAP( )
 public:
-    void DrawSelectionRubberband( const CPoint& point );        // 拖动预览
+    void DrawSelectionRubberband( const CPoint& point );        // !拖动预览，最好返回一个当前选中的图形
     void OnLButtonDown( UINT nFlags, CPoint point );
 
     afx_msg void OnLButtonUp( UINT nFlags, CPoint point );
@@ -66,7 +66,7 @@ private:
     CPoint m_deltaPt;
     CRect  m_hitRect;
 
-    std::vector<Graph*> m_graphs;
+    std::vector<Graph*> m_graphs;   // !应该用一个 map 存储图形以及其对应的外接矩形
 
     Graph*             m_pCurGraph;
     Shape              m_curTool;
