@@ -24,4 +24,10 @@ public:
 protected:
     static const AFX_MSGMAP* PASCAL GetThisMessageMap();
     const AFX_MSGMAP* GetMessageMap() const override;
+
+public:
+    DECLARE_MESSAGE_MAP( )
+    afx_msg void OnPaint( );
+
+	static void CALLBACK LineDDACallback( int, int, LPARAM );
 };

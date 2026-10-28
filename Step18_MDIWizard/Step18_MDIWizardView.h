@@ -62,7 +62,7 @@ public:
     afx_msg void OnMouseMove( UINT nFlags, CPoint point );
 
 private:
-    CPoint m_lButtonDownPt;
+    CPoint m_lButtonDownPt; // View 中最好只存旧点 Doc 中存图形和外接矩形的 map 鼠标移动时只操作 view 抬起时计算最大外界矩形并存入 map
     CPoint m_deltaPt;
     CRect  m_hitRect;
 

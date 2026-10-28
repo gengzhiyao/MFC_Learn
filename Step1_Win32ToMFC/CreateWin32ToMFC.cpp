@@ -15,7 +15,12 @@ BOOL CreateWin32ToMFC::InitInstance( )
     customFrame->ShowWindow(SW_SHOW);
     customFrame->UpdateWindow();*/
 
+    // 注册窗口类: CFrameWnd::Create -> CWnd::CreateEx -> CFrameWnd::PreCreateWindow -> AfxDeferRegisterClass
+    // 挑选 AFX_WND_REG/AFX_WNDCONTROLBAR_REG/AFX_WNDMDIFRAME_REG/AFX_WNDFRAMEORVIEW_REG/AFX_WNDOLECONTROL_REG 作为窗口类名称
+    // 最后产生的窗口类名称是 AfxFrameOrView140sud 140代表版本号,s代表静态链接,u代表Unicode,d代表Debug
+    // 最终通过 AfxRegisterClass/_AfxRegisterWithIcon 完成窗口类的注册
     auto usemapframe = new UseMapFrame( );
+    // Create 给你完全的控制权，需要你手动指定所有参数；而 LoadFrame 则是一个“快捷方式”，它从资源文件里自动读取大部分默认设置。
     usemapframe->Create( NULL, _T("CUSTOMFRAME") );
     m_pMainWnd = usemapframe;
     m_pMainWnd->ShowWindow( SW_SHOW );
@@ -116,4 +121,21 @@ LRESULT UseMapFrame::OnMyMessage( WPARAM wParam, LPARAM lParam )
 {
     OutputDebugString( _T("发送了自定义消息，进入了消息处理函数！") );
     return 0;
+}
+BEGIN_MESSAGE_MAP( UseMapFrame, CFrameWnd )
+ON_WM_PAINT( )
+END_MESSAGE_MAP( )
+
+void UseMapFrame::OnPaint( )
+{
+    CPaintDC dc( this );    // device context for painting
+    CRect    rect;
+    this->GetClientRect( &rect );
+
+    ::LineDDA( rect.right / 2, 0, rect.right / 2, rect.bottom / 2, ( LINEDDAPROC )LineDDACallback, ( LPARAM )( LPVOID )&dc );
+}
+
+void UseMapFrame::LineDDACallback( int, int, LPARAM )
+{
+    // ...
 }
