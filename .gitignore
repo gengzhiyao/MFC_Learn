@@ -36,3 +36,5 @@ x64/
 **/*.bak
 **/*.swp
 **/*~
+*.cc-history
+*.claude

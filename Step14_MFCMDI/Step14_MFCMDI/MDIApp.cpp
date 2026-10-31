@@ -9,6 +9,15 @@
  * **并且**需要在资源视图中右键资源，选择资源包括，编译时指令中添加 #include <afxres.rc>
  */
 
+/**
+* View 的创建过程:
+* OnOpenDocument -> CreateNewDocument;
+*                -> CDocTemplate::CreateNewFrame -> [CMDIChildWnd]CreateObject
+*                                                -> LoadFrame -> Create -> CreateEx -> PostMessage(WM_CREATE)
+*                -> Call CFrameWnd::OnCreate -> CreateHelper -> [CView]CreateObject
+* 多次调用 PreCreateWindow 是因为系统会预先注册四个窗口类
+*/
+
 BOOL MDIApp::InitInstance( )
 {
     CMultiDocTemplate* pTemplate1 = new CMultiDocTemplate( IDR_MENU2, RUNTIME_CLASS( CMyDoc1 ), RUNTIME_CLASS( CMyChild ), RUNTIME_CLASS( CMyView ) );
@@ -17,6 +26,7 @@ BOOL MDIApp::InitInstance( )
     CMyFrame* pFrame = new CMyFrame( );
     pFrame->LoadFrame( IDR_MENU1 );
     m_pMainWnd = pFrame;
+
     pFrame->ShowWindow( SW_SHOW );
     pFrame->UpdateWindow( );
 
@@ -24,7 +34,12 @@ BOOL MDIApp::InitInstance( )
     AddDocTemplate( pTemplate2 );
     // OnFileNew( );
     // OnFileNew( );// 每次调用都会创建一个子视图窗口和视图窗口
-
+    
+    // --- Enable Drag and Drop ---
+    m_pMainWnd->DragAcceptFiles( );
+    EnableShellOpen( );
+    RegisterShellFileTypes( true );
+    // --- End ---
     return TRUE;
 }
 
@@ -95,37 +110,43 @@ void CMyView::OnLButtonUp( UINT key, CPoint upPt )
     return CView::OnLButtonUp( key, upPt );
 }
 
-CMyView::~CMyView() {
-    for ( int i = 0; i < m_array.GetCount(); i++ )
+CMyView::~CMyView( )
+{
+    for ( int i = 0; i < m_array.GetCount( ); i++ )
     {
         delete m_array[i];
     }
- }
+}
 
 // CMultiDocTemplate类中有一个成员m_docList保存了多个文档类对象的地址
 // theApp中成员m_pDocManager管理文档->m_templateList单文档模板类对象的地址
 
-CMyDoc1::~CMyDoc1( ) { delete m_pStroke; }
+CMyDoc1::~CMyDoc1( )
+{
+    delete m_pStroke;
+}
 
- void CMyDoc1::Serialize( CArchive& ar )
- {
+void CMyDoc1::Serialize( CArchive& ar )
+{
     POSITION pos = GetFirstViewPosition( );
     CMyView* view = static_cast<CMyView*>( GetNextView( pos ) );
     if ( ar.IsStoring( ) )
     {
         m_pStroke = new CMyStroke;
         ar.WriteObject( m_pStroke );    // WriteObject -> obj.Serialize
-        int nCount =int( view->m_array.GetCount( ));
+        int nCount = int( view->m_array.GetCount( ) );
         ar << nCount;
         for ( int i = 0; i < view->m_array.GetCount( ); i++ )
         {
             ar.WriteObject( view->m_array[i] );
+            // ar << view->m_array[i];  // CArchive 重载了 << 并调用 WriteObject
         }
     }
     else
     {
-        CMyStroke* m_pStroke = ( CMyStroke* )ar.ReadObject( RUNTIME_CLASS( CMyStroke ) );
-        int        nCount;
+        CMyStroke* m_pStroke = ( CMyStroke* )ar.ReadObject(
+            RUNTIME_CLASS( CMyStroke ) );   // CRuntimeClass::FromName(CRuntimeClass::m_lpszClassName) 比较CRuntimeClass中的字符串，而返回一个CRuntimeClass 从而调用 CreateObject()
+        int nCount;
         ar >> nCount;
         CGraph* graph;
         for ( int i = 0; i < nCount; i++ )
@@ -177,10 +198,22 @@ void CGraph::DrawGraph( CDC* pDC )
 }
 IMPLEMENT_SERIAL( CGraph, CObject, 1 )
 
-void CMyView::OnDot( ) { m_type = 0; }
+void CMyView::OnDot( )
+{
+    m_type = 0;
+}
 
-void CMyView::OnLine( ) { m_type = 1; }
+void CMyView::OnLine( )
+{
+    m_type = 1;
+}
 
-void CMyView::OnRect( ) { m_type = 2; }
+void CMyView::OnRect( )
+{
+    m_type = 2;
+}
 
-void CMyView::OnEllipse( ) { m_type = 3; }
+void CMyView::OnEllipse( )
+{
+    m_type = 3;
+}

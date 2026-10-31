@@ -3,7 +3,9 @@
 //
 
 #pragma once
-
+#include <memory>
+#include "DrawCommand.h"
+#include <vector>
 class CStep18MDIWizardView : public CScrollView
 {
 protected: // 仅从序列化创建
@@ -14,8 +16,21 @@ protected: // 仅从序列化创建
 public:
     CStep18MDIWizardDoc* GetDocument( ) const;
 
+    class utils
+    {
+    public:
+        static void LPtoDP( CView* pWnd, CPoint& src );
+        static void DPtoLP( CView* pWnd, CPoint& src );
+
+        enum class MouseStatus
+        {
+            Drawing = 1,
+            Selecting
+        };
+    };
 // 操作
-public:
+private:
+    CRect HitTest( CPoint pt );
 // 重写
 public:
     virtual void OnDraw( CDC* pDC );  // 重写以绘制该视图
@@ -40,25 +55,35 @@ protected:
 protected:
     DECLARE_MESSAGE_MAP( )
 public:
-    afx_msg void OnLButtonDown( UINT nFlags, CPoint point );
+    void DrawSelectionRubberband( const CPoint& point );        // !拖动预览，最好返回一个当前选中的图形
+    void OnLButtonDown( UINT nFlags, CPoint point );
+
     afx_msg void OnLButtonUp( UINT nFlags, CPoint point );
     afx_msg void OnMouseMove( UINT nFlags, CPoint point );
 
 private:
-    CPoint m_mouseDownPt;
-    CPoint m_oldPt;
+    CPoint m_lButtonDownPt; // View 中最好只存旧点 Doc 中存图形和外接矩形的 map 鼠标移动时只操作 view 抬起时计算最大外界矩形并存入 map
+    CPoint m_deltaPt;
+    CRect  m_hitRect;
 
-    std::vector<Graph*> m_graphs;
+    std::vector<Graph*> m_graphs;   // !应该用一个 map 存储图形以及其对应的外接矩形
 
-    Shape m_curShape;
+    Graph*             m_pCurGraph;
+    Shape              m_curTool;
+    utils::MouseStatus m_mouseStatus;
 
 public:
     afx_msg void OnSelectCircle( );
-    afx_msg void OnSelectPolygon( );
+    afx_msg void OnSelectPolyline( );
     afx_msg void OnSelectTriangle( );
     afx_msg void OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
+    afx_msg void OnSelectLine( );
+    afx_msg void OnLButtonDblClk( UINT nFlags, CPoint point );
 };
 
 #ifndef _DEBUG  // Step18_MDIWizardView.cpp 中的调试版本
-inline CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const { return reinterpret_cast<CStep18MDIWizardDoc*>( m_pDocument ); }
+inline CStep18MDIWizardDoc* CStep18MDIWizardView::GetDocument( ) const
+{
+    return reinterpret_cast<CStep18MDIWizardDoc*>( m_pDocument );
+}
 #endif

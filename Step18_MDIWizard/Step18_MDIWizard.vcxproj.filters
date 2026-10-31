@@ -45,6 +45,12 @@
     <ClInclude Include="Shape.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DrawCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cmdobj.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Step18_MDIWizard.cpp">
@@ -66,6 +72,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Shape.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cmdobj.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

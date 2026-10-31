@@ -25,6 +25,8 @@ void RegisterAll( )
     GRectangle::Register( );
     GCircle::Register( );
     GTriangle::Register( );
+    GLine::Register( );
+    GPolyline::Register( );
 }
 }    // namespace
 
@@ -67,6 +69,7 @@ CStep18MDIWizardApp theApp;
 
 BOOL CStep18MDIWizardApp::InitInstance( )
 {
+    afxTraceEnabled = TRUE;     //! 能够控制 MFC 库中的 TRACE 输出
     // 如果一个运行在 Windows XP 上的应用程序清单指定要
     // 使用 ComCtl32.dll 版本 6 或更高版本来启用可视化方式，
     // 则需要 InitCommonControlsEx()。  否则，将无法创建窗口。
@@ -132,7 +135,7 @@ BOOL CStep18MDIWizardApp::InitInstance( )
     // 用 /RegServer、/Register、/Unregserver 或 /Unregister 启动应用程序，则返回 FALSE。
     if ( !ProcessShellCommand( cmdInfo ) ) return FALSE;
     // 主窗口已初始化，因此显示它并对其进行更新
-    pMainFrame->ShowWindow( SW_SHOWMAXIMIZED );
+    pMainFrame->ShowWindow( SW_SHOW );
     pMainFrame->UpdateWindow( );
     return TRUE;
 }

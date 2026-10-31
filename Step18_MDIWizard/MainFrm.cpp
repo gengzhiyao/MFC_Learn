@@ -20,7 +20,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_WM_CREATE()
 	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnApplicationLook)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnUpdateApplicationLook)
-END_MESSAGE_MAP()
+        ON_WM_SHOWWINDOW( )
+        END_MESSAGE_MAP( )
 
 static UINT indicators[] =
 {
@@ -65,7 +66,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableDocking(CBRS_ALIGN_ANY);
 	DockControlBar(&m_wndToolBar);
 
-
 	return 0;
 }
 
@@ -77,7 +77,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	//  CREATESTRUCT cs 来修改窗口类或样式
 
 	cs.style = WS_OVERLAPPED | WS_CAPTION | FWS_ADDTOTITLE
-		 | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_MAXIMIZE | WS_SYSMENU;
+		 | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU;
 
 	return TRUE;
 }
@@ -173,3 +173,15 @@ void CMainFrame::OnUpdateApplicationLook(CCmdUI* pCmdUI)
 	pCmdUI->SetRadio(theApp.m_nAppLook == pCmdUI->m_nID);
 }
 
+
+void CMainFrame::OnShowWindow( BOOL bShow, UINT nStatus )
+{
+    CMDIFrameWnd::OnShowWindow( bShow, nStatus );
+
+    // bShow == TRUE：窗口第一次显示
+    if ( bShow )
+    {
+        // 设置主框架窗口 宽800，高600
+        SetWindowPos( nullptr, 0, 0, 800, 600, SWP_NOZORDER );
+    }
+}
