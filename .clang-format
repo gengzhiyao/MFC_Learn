@@ -71,19 +71,19 @@ BreakConstructorInitializers: BeforeColon
 PackConstructorInitializers: Never    
 
 # 允许短函数在单行上
-#AllowShortFunctionsOnASingleLine: Inline
+#AllowShortFunctionsOnASingleLine: None
 
  # 允许短语法块在单行上
-AllowShortBlocksOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Never
 
 # 总是把短语句放在单行上
-AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortIfStatementsOnASingleLine: Never
 
 # 允许短匿Lambda函数在单行上
 AllowShortLambdasOnASingleLine: All
 
 # 允许合并短循环到单行上
-AllowShortLoopsOnASingleLine: true
+AllowShortLoopsOnASingleLine: false
 
 #大括号开头不保留空行
 KeepEmptyLinesAtTheStartOfBlocks: false
